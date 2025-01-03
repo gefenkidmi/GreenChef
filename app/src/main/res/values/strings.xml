@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">GreenChef</string>
+    <string name="app_name">Recipe4U</string>
+    <string name="login_image">login image</string>
 </resources>
