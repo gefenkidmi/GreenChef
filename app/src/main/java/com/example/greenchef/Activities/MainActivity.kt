@@ -1,12 +1,16 @@
 package com.example.greenchef.Activities
 
 import android.os.Bundle
+import android.view.View
+import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.greenchef.R
 import com.example.greenchef.databinding.ActivityMainBinding
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,7 +22,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
+        toolbar.title = ""
+        setSupportActionBar(toolbar)
+
         initNavigation()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
     private fun initNavigation() {
@@ -26,26 +38,23 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
+        // Set up ActionBar with NavController
+        setupActionBarWithNavController(navController)
+
         // Set up Bottom Navigation View
         binding.bottomNavigationView.setupWithNavController(navController)
 
         // Handle item selection manually
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_home -> {
-                    navController.navigate(R.id.navigation_home)
-                    true
-                }
-                R.id.navigation_add -> {
-                    navController.navigate(R.id.navigation_add)
-                    true
-                }
-                R.id.navigation_favorites -> {
-                    navController.navigate(R.id.navigation_favorites)
-                    true
-                }
+                R.id.navigation_home,
+                R.id.navigation_add,
+                R.id.navigation_favorites,
                 R.id.navigation_profile -> {
-                    navController.navigate(R.id.navigation_profile)
+                    // Check if the selected destination is different from the current one
+                    if (binding.bottomNavigationView.selectedItemId != item.itemId) {
+                        navController.navigate(item.itemId)
+                    }
                     true
                 }
                 else -> false
@@ -53,4 +62,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
