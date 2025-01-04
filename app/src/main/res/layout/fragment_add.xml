@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.AddFragment">
@@ -12,111 +13,101 @@
         android:padding="16dp">
 
         <!-- Recipe Name -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Recipe Name"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/editTextRecipeName"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutRecipeName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter recipe name"
-            android:inputType="text" />
+            android:layout_marginTop="16dp"
+            android:hint="Recipe Name">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextRecipeName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:background="@drawable/border_background"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Image View -->
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageViewRecipe"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:src="@drawable/main_logo"
-            android:scaleType="centerCrop"
-            android:layout_marginTop="16dp"/>
+            android:src="@drawable/baseline_add_photo_alternate_24"
+            android:layout_marginTop="16dp"
+            app:shapeAppearanceOverlay="@style/RoundedSquare"
+            />
 
         <!-- Category Dropdown -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Category"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-
         <Spinner
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:entries="@array/category_options">
+            android:layout_height="50dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/border_background">
         </Spinner>
 
         <!-- Description -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Description"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-
-        <EditText
-            android:id="@+id/editTextDescription"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter description"
-            android:inputType="text"/>
+            android:layout_marginTop="16dp"
+            android:hint="Description">
 
-        <!-- Ingredients -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ingredients"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-
-        <LinearLayout
-            android:id="@+id/ingredientsLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Initial ingredient input -->
-            <EditText
-                android:id="@+id/editTextIngredient"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter ingredient"
+                android:background="@drawable/border_background"
                 android:inputType="text"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Plus button to add more ingredients -->
-            <Button
-                android:id="@+id/buttonAddIngredient"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="+ Add Ingredient"
-                android:layout_gravity="end"
-                android:layout_marginTop="8dp"/>
-        </LinearLayout>
-
-        <!-- Procedure -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Procedure"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-
-        <EditText
-            android:id="@+id/editTextProcedure"
+        <!-- Filter Ingredients -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutFilter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter procedure"
-            android:inputType="textMultiLine"
-            android:lines="5" />
+            android:layout_marginTop="16dp"
+            android:hint="Filter Ingredients">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:background="@drawable/border_background"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Ingredients RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewIngredients"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:layout_marginTop="16dp"
+
+            android:background="@drawable/border_background"
+            android:nestedScrollingEnabled="true"
+            tools:listitem="@layout/ingredient_item" />
+
+        <!-- Procedure -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutProcedure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Procedure">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextProcedure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:background="@drawable/border_background"
+                android:lines="5" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Save and Cancel Buttons -->
         <LinearLayout
@@ -125,21 +116,24 @@
             android:orientation="horizontal"
             android:layout_marginTop="16dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSave"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Save"
-                android:backgroundTint="@android:color/holo_blue_bright" />
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_marginEnd="8dp" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonCancel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Cancel"
-                android:backgroundTint="@android:color/darker_gray" />
+                android:backgroundTint="@android:color/darker_gray"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_marginStart="8dp" />
         </LinearLayout>
 
     </LinearLayout>

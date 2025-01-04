@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="login_screen_bg">#F8F8F8</color>
     <color name="login_button">#00A651</color>
+    <color name="recipeCardButton">#F3F3F3</color>
+    <color name="favoriteColor">#F1B537</color>
 </resources>

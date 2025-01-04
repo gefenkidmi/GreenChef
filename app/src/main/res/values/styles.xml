@@ -11,4 +11,10 @@
     <style name="RoundedSquare">
         <item name="cornerSize">10%</item>
     </style>
+    <style name="favoriteCheckBoxStyle" parent="Base.Theme.AppCompat">
+    </style>
+
+    <style name="RatingBarStyle" parent="Widget.AppCompat.RatingBar">
+        <item name="colorControlActivated">@color/favoriteColor</item>
+    </style>
 </resources>

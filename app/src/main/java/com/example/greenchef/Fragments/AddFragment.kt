@@ -2,20 +2,33 @@ package com.example.greenchef.Fragments
 
 import GalleryHandler
 import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.greenchef.Adapters.IngredientAdapter
+import com.example.greenchef.DataClass.Recipe
+import com.example.greenchef.Objects.GlobalVariables
+import com.example.greenchef.Objects.localDataRepository
 import com.example.greenchef.R
+import com.example.greenchef.ViewModels.RecipeViewModel
+import com.example.greenchef.ViewModels.UserViewModel
+import com.google.android.material.textfield.TextInputEditText
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -35,8 +48,14 @@ class AddFragment : Fragment() {
     private lateinit var buttonAddIngredient: Button
     private lateinit var buttonSave: Button
     private lateinit var buttonCancel: Button
+    private lateinit var editTextFilter: TextInputEditText
+    private lateinit var recyclerViewIngredients: RecyclerView
+    private lateinit var ingredientAdapter: IngredientAdapter
+    private lateinit var navController: NavController
 
     private var imageUri: Uri? = null
+    private val recipeViewModel: RecipeViewModel by viewModels()
+    private val userViewModel: UserViewModel = UserViewModel(GlobalVariables.currentUser!!.userId)
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -51,7 +70,9 @@ class AddFragment : Fragment() {
                 // Handle the selected image URI
                 val selectedImageUri: Uri? = result.data?.data
                 if (selectedImageUri != null) {
+                    imageViewRecipe.scaleType = ImageView.ScaleType.CENTER_CROP
                     imageViewRecipe.setImageURI(selectedImageUri)
+                    imageUri = selectedImageUri
                 }
             }
         }
@@ -70,63 +91,120 @@ class AddFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_add, container, false)
 
+        recipeViewModel.setContextAndDB(requireContext())
+        navController = findNavController()
+
         // Initialize views
         recipeNameEditText = view.findViewById(R.id.editTextRecipeName)
         imageViewRecipe = view.findViewById(R.id.imageViewRecipe)
         spinnerCategory = view.findViewById(R.id.spinnerCategory)
         editTextDescription = view.findViewById(R.id.editTextDescription)
-        editTextIngredient = view.findViewById(R.id.editTextIngredient)
         editTextProcedure = view.findViewById(R.id.editTextProcedure)
-        buttonAddIngredient = view.findViewById(R.id.buttonAddIngredient)
         buttonSave = view.findViewById(R.id.buttonSave)
         buttonCancel = view.findViewById(R.id.buttonCancel)
 
+        initSpinnerCategory()
+        initImageView()
+        initButtons()
+        initRecyclerViewIngredients(view)
+
+        return view
+    }
+
+    private fun initSpinnerCategory() {
+        val adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.spinner_item_layout, // Use the custom layout
+            localDataRepository.categories
+        )
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        // Apply the adapter to the spinner
+        spinnerCategory.adapter = adapter
+    }
+    private fun initImageView() {
         // Set onClickListener for the image view to pick an image from the gallery
         imageViewRecipe.setOnClickListener {
             GalleryHandler.getPhotoUriFromGallery(requireActivity(), pickImageLauncher, requestPermissionLauncher)
         }
-
-        // Set onClickListener for the button to add more ingredients dynamically
-        buttonAddIngredient.setOnClickListener {
-            addIngredientField()
-        }
-
+    }
+    private fun initButtons() {
         // Set onClickListener for the save button
         buttonSave.setOnClickListener {
-            // Handle save button click here
+            uploadRecipe()
+
         }
 
         // Set onClickListener for the cancel button
         buttonCancel.setOnClickListener {
             // Handle cancel button click here
-        }
-
-        return view
-    }
-
-    private fun openGallery() {
-        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            imageUri = data.data
-            imageViewRecipe.setImageURI(imageUri)
+            navController.navigateUp()
         }
     }
+    private fun initRecyclerViewIngredients(view: View) {
+        editTextFilter = view.findViewById(R.id.editTextFilter)
+        recyclerViewIngredients = view.findViewById(R.id.recyclerViewIngredients)
 
-    private fun addIngredientField() {
-        val newIngredientEditText = EditText(requireContext())
-        newIngredientEditText.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
+        // Initialize RecyclerView and Adapter
+        recyclerViewIngredients.layoutManager = LinearLayoutManager(requireContext())
+        ingredientAdapter = IngredientAdapter(localDataRepository.ingredients)
+        recyclerViewIngredients.adapter = ingredientAdapter
+
+        // Set up text change listener for filtering
+        editTextFilter.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                // Do nothing
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterIngredients(s.toString())
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                // Do nothing
+            }
+        })
+    }
+    private fun uploadRecipe() {
+        // Get the values from the views
+        val recipeName = recipeNameEditText.text.toString()
+        val category = spinnerCategory.selectedItem.toString()
+        val description = editTextDescription.text.toString()
+        val procedure = editTextProcedure.text.toString()
+
+        // Get the checked ingredients from the RecyclerView
+        val checkedIngredients = ingredientAdapter.getCheckedItems().toList()
+
+        // Create a Recipe object
+        val recipe = Recipe(
+            recipeId = "",
+            name = recipeName,
+            category = category,
+            description = description,
+            imageUri = imageUri.toString(),
+            ingredients = checkedIngredients,
+            procedure = procedure,
+            rating = 0.0f,
+            numberOfRatings = 0,
+            ownerId = GlobalVariables.currentUser!!.userId,
+            lastUpdated = System.currentTimeMillis()
         )
-        newIngredientEditText.hint = "Enter ingredient"
-        // Add the new ingredient EditText to the existing layout
-        (view?.findViewById<ViewGroup>(R.id.ingredientsLayout))?.addView(newIngredientEditText)
+
+        // Call the createRecipe method in RecipeViewModel
+        recipeViewModel.createRecipe(recipe) { recipeWithId ->
+            // After a successful creation, update the user's recipeIds
+            userViewModel.updateUserRecipeIds(listOf(recipeWithId.recipeId), onSuccess = {
+                // After a successful update, navigate back to the previous fragment
+                navController.navigateUp()
+            }, onFailure = {
+                // Handle failure
+            })
+        }
     }
 
-    // Add any additional functionality as needed
+    private fun filterIngredients(query: String) {
+        ingredientAdapter.filter.filter(query)
+    }
 }
