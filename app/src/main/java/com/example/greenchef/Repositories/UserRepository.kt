@@ -34,7 +34,7 @@ class UserRepository {
             }
             .addOnFailureListener { exception ->
                 // Handle failure
-                Log.d("initializeUser", "failed: " + exception.message)
+                Log.d("initializeUser", "failed: ${exception.message}")
             }
     }
 
@@ -51,6 +51,7 @@ class UserRepository {
             }
             .addOnFailureListener { exception ->
                 // Handle failure
+                Log.d("fetchUser", "failed: ${exception.message}")
                 onFailure()
             }
     }
@@ -65,12 +66,18 @@ class UserRepository {
             }
             .addOnFailureListener { exception ->
                 // Handle failure
+                Log.d("updateUser", "failed: ${exception.message}")
                 onFailure()
             }
     }
 
     // Function to update user name in Firestore
-    fun updateUserName(userId: String, newName: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
+    fun updateUserName(
+        userId: String,
+        newName: String,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
+    ) {
         db.collection("users")
             .document(userId)
             .update("name", newName)
@@ -79,35 +86,18 @@ class UserRepository {
             }
             .addOnFailureListener { exception ->
                 // Handle failure
+                Log.d("updateUserName", "failed: ${exception.message}")
                 onFailure()
             }
-    }
-
-    // Function to update user photo in Firestore
-    fun updateUserPhoto(userId: String, imageUri: Uri, onSuccess: (String) -> Unit, onFailure: () -> Unit) {
-        uploadImage(
-            userId,
-            imageUri,
-            onSuccess = { newPhotoUrl ->
-                db.collection("users")
-                    .document(userId)
-                    .update("photoUrl", newPhotoUrl)
-                    .addOnSuccessListener {
-                        onSuccess(newPhotoUrl)
-                    }
-                    .addOnFailureListener { exception ->
-                        // Handle failure
-                        onFailure()
-                    }
-            },
-            onFailure = {
-                onFailure()
-            }
-        )
     }
 
     // Function to update user recipe IDs in Firestore
-    fun updateUserRecipeIds(userId: String, newRecipeIds: List<String>, onSuccess: () -> Unit, onFailure: () -> Unit) {
+    fun updateUserRecipeIds(
+        userId: String,
+        newRecipeIds: List<String>,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
+    ) {
         db.collection("users")
             .document(userId)
             .update("recipeIds", newRecipeIds)
@@ -116,12 +106,18 @@ class UserRepository {
             }
             .addOnFailureListener { exception ->
                 // Handle failure
+                Log.d("updateUserRecipeIds", "failed: ${exception.message}")
                 onFailure()
             }
     }
 
     // Function to update user favorite recipe IDs in Firestore
-    fun updateUserFavoriteRecipeIds(userId: String, newFavoriteRecipeIds: List<String>, onSuccess: () -> Unit, onFailure: () -> Unit) {
+    fun updateUserFavoriteRecipeIds(
+        userId: String,
+        newFavoriteRecipeIds: List<String>,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
+    ) {
         db.collection("users")
             .document(userId)
             .update("favoriteRecipeIds", newFavoriteRecipeIds)
@@ -130,12 +126,18 @@ class UserRepository {
             }
             .addOnFailureListener { exception ->
                 // Handle failure
+                Log.d("updateUserFavoriteRecipeIds", "failed: ${exception.message}")
                 onFailure()
             }
     }
 
     // Function to update user rated recipes in Firestore
-    fun updateUserRatedRecipes(userId: String, newRatedRecipes: Map<String, Int>, onSuccess: () -> Unit, onFailure: () -> Unit) {
+    fun updateUserRatedRecipes(
+        userId: String,
+        newRatedRecipes: Map<String, Int>,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
+    ) {
         db.collection("users")
             .document(userId)
             .update("ratedRecipes", newRatedRecipes)
@@ -144,21 +146,52 @@ class UserRepository {
             }
             .addOnFailureListener { exception ->
                 // Handle failure
+                Log.d("updateUserRatedRecipes", "failed: ${exception.message}")
                 onFailure()
             }
     }
 
-    // Function to upload an image to Firestore Storage
-    private fun uploadImage(userId: String, imageUri: Uri, onSuccess: (String) -> Unit, onFailure: () -> Unit) {
-        val storageRef: StorageReference = storage.reference.child("user_photos/$userId/${UUID.randomUUID()}")
-        storageRef.putFile(imageUri)
+    // Function to update user photo URL in Firestore
+    fun updateUserPhoto(userId: String, imageUri: Uri, onSuccess: (String) -> Unit, onFailure: () -> Unit) {
+        uploadImage(imageUri,
+            onSuccess = { imageUrl ->
+                // Update the user document with the new photoUrl
+                db.collection("users")
+                    .document(userId)
+                    .update("photoUrl", imageUrl)
+                    .addOnSuccessListener {
+                        // Photo URL updated successfully
+                        onSuccess(imageUrl)
+                    }
+                    .addOnFailureListener { exception ->
+                        // Handle failure
+                        Log.d("updateUserPhoto", "failed to update photoUrl: ${exception.message}")
+                        onFailure()
+                    }
+            },
+            onFailure = onFailure
+        )
+    }
+
+    // Function to upload an image to Firestore Storage and get the URL
+    private fun uploadImage(imageUri: Uri, onSuccess: (String) -> Unit, onFailure: () -> Unit) {
+        val storageRef: StorageReference = storage.reference
+        val imageFileName = UUID.randomUUID().toString() // Generate a unique filename for the image
+        val imageRef: StorageReference = storageRef.child("user_images/$imageFileName")
+
+        // Upload the image to Firebase Storage
+        imageRef.putFile(imageUri)
             .addOnSuccessListener { taskSnapshot ->
-                // Image uploaded successfully, get download URL
-                storageRef.downloadUrl.addOnSuccessListener { uri ->
-                    onSuccess(uri.toString())
+                // Image uploaded successfully
+                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                    // Get the download URL of the uploaded image
+                    val imageUrl = uri.toString()
+                    onSuccess(imageUrl)
                 }
             }
             .addOnFailureListener { exception ->
+                // Handle failure
+                Log.d("uploadImage", "failed: ${exception.message}")
                 onFailure()
             }
     }
