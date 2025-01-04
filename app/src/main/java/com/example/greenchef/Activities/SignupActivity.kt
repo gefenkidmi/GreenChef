@@ -54,8 +54,8 @@ class SignupActivity : AppCompatActivity() {
                 val username = usernameEditText.text.toString().trim()
                 val userid = authViewModel.currentUser.value!!.uid
                 val userViewModel = UserViewModel(userid)
-                userViewModel.updateUserName(username)
                 userViewModel.userLiveData.observe(this) { userdata ->
+                    userViewModel.updateUserName(username)
                     GlobalVariables.currentUser = userdata
                     // User is signed in, navigate to the MainActivity
                     startActivity(Intent(this, MainActivity::class.java))

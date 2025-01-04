@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
@@ -32,6 +33,7 @@ class RecipeAdapter(private var recipes: List<Recipe>,
         val textViewRecipeName: TextView = itemView.findViewById(R.id.textViewRecipeName)
         val textViewDescription: TextView = itemView.findViewById(R.id.textViewDescription)
         val favoriteCheckBox: CheckBox = itemView.findViewById(R.id.favoriteCheckBox)
+        val ratingBar: RatingBar = itemView.findViewById(R.id.ratingBar)
         //val buttonView: Button = itemView.findViewById(R.id.buttonView)
     }
 
@@ -53,6 +55,7 @@ class RecipeAdapter(private var recipes: List<Recipe>,
         holder.textViewRecipeName.text = recipe.name
         holder.textViewDescription.text = recipe.description
         holder.favoriteCheckBox.isChecked = GlobalVariables.currentUser!!.favoriteRecipeIds.contains(recipe.recipeId)
+        holder.ratingBar.rating = recipe.rating
 
         loadImageToView(holder, recipe)
         setClickListeners(holder, recipe)
@@ -80,7 +83,7 @@ class RecipeAdapter(private var recipes: List<Recipe>,
                 .placeholder(R.drawable.progress_animation)
                 .into(holder.imageViewRecipe)
         } else {
-            holder.imageViewRecipe.setImageResource(R.drawable.login_image)
+            holder.imageViewRecipe.setImageResource(R.drawable.main_logo)
         }
     }
     override fun getItemCount(): Int = recipes.size

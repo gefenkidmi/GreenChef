@@ -43,6 +43,19 @@
             android:maxLines="1"
             android:ellipsize="end" />
 
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/RatingBarStyle"
+            android:clickable="false"
+            android:scaleX="0.75"
+            android:scaleY="0.75"
+            android:isIndicator="true"
+            android:layout_marginStart="-33dp"
+            />
+
     </LinearLayout>
 
     <CheckBox

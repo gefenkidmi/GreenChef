@@ -10,16 +10,16 @@ import kotlinx.serialization.Serializable
 @Entity(tableName = "recipes")
 data class Recipe(
     @PrimaryKey val recipeId: String = "",
-    val name: String = "",
-    val category: String = "",
-    val description: String = "",
+    var name: String = "",
+    var category: String = "",
+    var description: String = "",
     var imageUri: String = "",
-    val ingredients: List<String> = emptyList(),
-    val procedure: String = "",
-    val rating: Float = 0.0f,
-    val numberOfRatings: Int = 0,
-    val ownerId: String = "",
-    val lastUpdated: Long = 0
+    var ingredients: List<String> = emptyList(),
+    var procedure: String = "",
+    var rating: Float = 0.0f,
+    var numberOfRatings: Int = 0,
+    var ownerId: String = "",
+    var lastUpdated: Long = 0
 ) : Parcelable {
 
     @Ignore

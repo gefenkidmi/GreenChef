@@ -116,4 +116,28 @@ class UserViewModel(private val userId: String) : ViewModel() {
             }
         )
     }
+
+    fun removeUserRatedRecipe(recipeId: String) {
+        userRepository.removeUserRatedRecipe(userId, recipeId,
+            onSuccess = {
+                // After a successful update, fetch the user again to reflect changes
+                fetchUser()
+            },
+            onFailure = {
+                // Handle failure
+            }
+        )
+    }
+
+    fun addUserRatedRecipe(recipeId: String, rating: Float) {
+        userRepository.addUserRatedRecipe(userId, recipeId, rating,
+            onSuccess = {
+                // After a successful update, fetch the user again to reflect changes
+                fetchUser()
+            },
+            onFailure = {
+                // Handle failure
+            }
+        )
+    }
 }

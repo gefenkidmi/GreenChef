@@ -1,4 +1,4 @@
-package com.cc.recipe4u.Objects
+package com.example.greenchef.Objects
 
 object localDataRepository {
     val ingredients: List<String> = listOf(
