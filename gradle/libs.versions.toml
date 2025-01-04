@@ -11,6 +11,7 @@ activity = "1.9.3"
 constraintlayout = "2.1.4"
 firebaseBom = "32.7.0"
 googleService = "4.4.0"
+livedataKtx = "2.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -25,6 +26,7 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth"}
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore"}
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics"}
+livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "livedataKtx"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.livedata.ktx)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.analytics)
     testImplementation(libs.junit)
