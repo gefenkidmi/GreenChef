@@ -52,17 +52,14 @@ class EditProfileImageDialogFragment : DialogFragment() {
     }
 
     private fun checkAndOpenGalleryIfPermissionGranted() {
-        // Check if the permission is granted
         val permissionCheck = ContextCompat.checkSelfPermission(
             requireContext(),
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
 
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            // Permission already granted, open the gallery
             openGallery()
         } else {
-            // Permission not granted, request it
             requestReadExternalStoragePermission()
         }
     }
@@ -83,10 +80,8 @@ class EditProfileImageDialogFragment : DialogFragment() {
         when (requestCode) {
             REQUEST_READ_EXTERNAL_STORAGE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission granted, open the gallery
                     openGallery()
                 } else {
-                    // Permission denied, handle accordingly (show a message, take appropriate action)
                 }
             }
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -95,7 +90,6 @@ class EditProfileImageDialogFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        // Check permissions again when the user returns to the dialog
         checkAndOpenGalleryIfPermissionGranted()
     }
 
@@ -106,7 +100,6 @@ class EditProfileImageDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // Adjust the dialog size if needed
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -125,7 +118,6 @@ class EditProfileImageDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         val imageViewProfile: ImageView = view.findViewById(R.id.imageViewProfile)
 
-        // Set up your UI and listeners as needed
     }
 
     companion object {

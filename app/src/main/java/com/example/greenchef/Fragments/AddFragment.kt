@@ -94,7 +94,6 @@ class AddFragment : Fragment() {
         recipeViewModel.setContextAndDB(requireContext())
         navController = findNavController()
 
-        // Initialize views
         recipeNameEditText = view.findViewById(R.id.editTextRecipeName)
         imageViewRecipe = view.findViewById(R.id.imageViewRecipe)
         spinnerCategory = view.findViewById(R.id.spinnerCategory)
@@ -114,32 +113,26 @@ class AddFragment : Fragment() {
     private fun initSpinnerCategory() {
         val adapter = ArrayAdapter(
             requireContext(),
-            R.layout.spiner_item_layout, // Use the custom layout
+            R.layout.spiner_item_layout,
             localDataRepository.categories
         )
 
-        // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        // Apply the adapter to the spinner
         spinnerCategory.adapter = adapter
     }
     private fun initImageView() {
-        // Set onClickListener for the image view to pick an image from the gallery
         imageViewRecipe.setOnClickListener {
             GalleryHandler.getPhotoUriFromGallery(requireActivity(), pickImageLauncher, requestPermissionLauncher)
         }
     }
     private fun initButtons() {
-        // Set onClickListener for the save button
         buttonSave.setOnClickListener {
             uploadRecipe()
 
         }
 
-        // Set onClickListener for the cancel button
         buttonCancel.setOnClickListener {
-            // Handle cancel button click here
             navController.navigateUp()
         }
     }
@@ -147,15 +140,12 @@ class AddFragment : Fragment() {
         editTextFilter = view.findViewById(R.id.editTextFilter)
         recyclerViewIngredients = view.findViewById(R.id.recyclerViewIngredients)
 
-        // Initialize RecyclerView and Adapter
         recyclerViewIngredients.layoutManager = LinearLayoutManager(requireContext())
         ingredientAdapter = IngredientAdapter(localDataRepository.ingredients)
         recyclerViewIngredients.adapter = ingredientAdapter
 
-        // Set up text change listener for filtering
         editTextFilter.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                // Do nothing
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -163,21 +153,17 @@ class AddFragment : Fragment() {
             }
 
             override fun afterTextChanged(p0: Editable?) {
-                // Do nothing
             }
         })
     }
     private fun uploadRecipe() {
-        // Get the values from the views
         val recipeName = recipeNameEditText.text.toString()
         val category = spinnerCategory.selectedItem.toString()
         val description = editTextDescription.text.toString()
         val procedure = editTextProcedure.text.toString()
 
-        // Get the checked ingredients from the RecyclerView
         val checkedIngredients = ingredientAdapter.getCheckedItems().toList()
 
-        // Create a Recipe object
         val recipe = Recipe(
             recipeId = "",
             name = recipeName,
@@ -192,14 +178,10 @@ class AddFragment : Fragment() {
             lastUpdated = System.currentTimeMillis()
         )
 
-        // Call the createRecipe method in RecipeViewModel
         recipeViewModel.createRecipe(recipe) { recipeWithId ->
-            // After a successful creation, update the user's recipeIds
             userViewModel.updateUserRecipeIds(listOf(recipeWithId.recipeId), onSuccess = {
-                // After a successful update, navigate back to the previous fragment
                 navController.navigateUp()
             }, onFailure = {
-                // Handle failure
             })
         }
     }

@@ -25,7 +25,6 @@ data class Recipe(
     @Ignore
     constructor() : this("", "", "", "", "", emptyList(), "", 0.0f, 0, "", 0)
 
-    // Implementing Parcelable
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(recipeId)
         parcel.writeString(name)
@@ -54,7 +53,6 @@ data class Recipe(
         }
     }
 
-    // Secondary constructor for Parcelable
     private constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
         parcel.readString() ?: "",

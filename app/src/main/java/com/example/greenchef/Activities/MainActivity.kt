@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity(){
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_sign_out -> {
-                // Handle sign out action here
                 authViewModel.signOut()
                 true
             }
@@ -67,25 +66,20 @@ class MainActivity : AppCompatActivity(){
     private fun initNavigation() {
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
-        // Set up Navigation component
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // Set up ActionBar with NavController
         setupActionBarWithNavController(navController)
 
-        // Set up Bottom Navigation View
         binding.bottomNavigationView.setupWithNavController(navController)
 
-        // Handle item selection manually
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home,
                 R.id.navigation_add,
                 R.id.navigation_favorites,
                 R.id.navigation_profile -> {
-                    // Check if the selected destination is different from the current one
                     if (binding.bottomNavigationView.selectedItemId != item.itemId) {
                         navController.popBackStack(
                             R.id.navigation_profile,

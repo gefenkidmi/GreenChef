@@ -4,6 +4,9 @@ import android.net.Uri
 import android.util.Log
 import com.example.greenchef.DataClass.Recipe
 import com.example.greenchef.Objects.RecipeLocalTime
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -22,6 +25,31 @@ object FirestoreModel {
                     recipes.add(recipe)
                 }
                 listener(recipes)
+            }
+    }
+
+    fun checkForDeletedRecipes(recipeIdsList: List<String>, listener: (List<String>) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val collectionReference = db.collection("recipes")
+
+        val tasks: List<Task<DocumentSnapshot>> = recipeIdsList.map { recipeId ->
+            collectionReference.document(recipeId).get()
+        }
+
+        // Use Tasks.whenAllSuccess to wait for all tasks to complete
+        Tasks.whenAllSuccess<DocumentSnapshot>(tasks)
+            .addOnCompleteListener { result ->
+                if (result.isSuccessful) {
+                    val deletedRecipeIds: MutableList<String> = mutableListOf()
+
+                    for (i in 0 until result.result?.size!!) {
+                        val documentSnapshot = result.result[i]
+                        if (!documentSnapshot.exists()) {
+                            deletedRecipeIds.add(recipeIdsList[i])
+                        }
+                    }
+                    listener(deletedRecipeIds)
+                }
             }
     }
 

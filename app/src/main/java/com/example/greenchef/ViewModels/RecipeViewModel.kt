@@ -21,12 +21,18 @@ class RecipeViewModel : ViewModel() {
     private lateinit var recipeDao: RecipeDao
     private val _allRecipes: MutableLiveData<List<Recipe>> = MutableLiveData()
     private val allRecipes: LiveData<List<Recipe>> = _allRecipes
+    private var removedDeletedRecipes = false
 
     fun setContextAndDB(context: Context) {
         this.context = context
         recipeDao = RecipeDatabase.db(context).recipeDao()
-        recipeDao.getAll().observeForever { recipes ->
+        val allRecipes = recipeDao.getAll()
+        allRecipes.observeForever { recipes ->
             _allRecipes.postValue(recipes)
+            if (!removedDeletedRecipes && recipes.isNotEmpty()) {
+                removedDeletedRecipes = true
+                removeDeletedRecipes(recipes)
+            }
         }
     }
     fun getAllRecipes(): LiveData<List<Recipe>> {
@@ -41,9 +47,20 @@ class RecipeViewModel : ViewModel() {
                     lastUpdated = recipe.lastUpdated
                 }
             }
+
             RecipeLocalTime.setLocalLastUpdated(context, lastUpdated)
         }
         return allRecipes
+    }
+
+    private fun removeDeletedRecipes(recipes: List<Recipe>) {
+        FirestoreModel.checkForDeletedRecipes(recipes.map { it.recipeId }) { deletedRecipeIds ->
+            CoroutineScope(Dispatchers.IO).launch {
+                for (deletedRecipeId in deletedRecipeIds) {
+                    recipeDao.deleteById(deletedRecipeId)
+                }
+            }
+        }
     }
 
     fun getByCategory(category: String): LiveData<List<Recipe>> {
