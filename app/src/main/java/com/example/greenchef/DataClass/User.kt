@@ -11,6 +11,5 @@ data class User(
     val favoriteRecipeIds: List<String> = emptyList(),
     val ratedRecipes: Map<String, Float> = emptyMap()
 ) {
-    // Add a no-argument constructor
     constructor() : this("", "", "", emptyList(), emptyList(), emptyMap())
 }

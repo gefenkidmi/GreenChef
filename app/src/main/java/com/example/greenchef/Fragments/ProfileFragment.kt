@@ -52,11 +52,8 @@ class ProfileFragment : Fragment(),
     private val pickImageLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                // Handle the selected image URI
                 val selectedImageUri: Uri? = result.data?.data
                 if (selectedImageUri != null) {
-                    // Use the selectedImageUri as needed
-                    // For example, update the UI with the selected image
                     userViewModel.updateUserPhoto(selectedImageUri)
                 }
             }
@@ -134,7 +131,6 @@ class ProfileFragment : Fragment(),
 
         displayNameTextView?.text = userData.name
 
-        // Load user photo using Picasso if available
         userData.photoUrl.takeIf { it.isNotEmpty() }?.let { url ->
             Picasso.get()
                 .load(url)
@@ -146,11 +142,9 @@ class ProfileFragment : Fragment(),
                     }
 
                     override fun onError(e: Exception?) {
-                        // Set your visibility to VISIBLE
                     }
                 })
         } ?: run {
-            // Load default placeholder image if user photo is not available
             userPhotoImageView?.setImageResource(R.drawable.baseline_add_photo_alternate_24)
         }
     }

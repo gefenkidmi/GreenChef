@@ -54,6 +54,7 @@
             android:scaleY="0.75"
             android:isIndicator="true"
             android:layout_marginStart="-33dp"
+            android:layout_marginTop="-8dp"
             />
 
     </LinearLayout>

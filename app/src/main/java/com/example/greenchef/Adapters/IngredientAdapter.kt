@@ -46,7 +46,6 @@ class IngredientAdapter(
 
     }
 
-    // Method to get the list of checked items
     fun getCheckedItems(): Set<String> {
         return checkedItems
     }

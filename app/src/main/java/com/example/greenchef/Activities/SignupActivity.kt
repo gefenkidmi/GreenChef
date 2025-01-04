@@ -19,14 +19,12 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        // Initialize UI components
         val usernameEditText: EditText = findViewById(R.id.et_username_signup)
         val passwordEditText: EditText = findViewById(R.id.et_password_signup)
         val emailEditText: EditText = findViewById(R.id.et_email_signup)
         val signupButton: Button = findViewById(R.id.btn_signup)
         val signInTextView: TextView = findViewById(R.id.tv_signin)
 
-        // Set onClickListener for the sign-up button
         signupButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
@@ -34,20 +32,16 @@ class SignupActivity : AppCompatActivity() {
 
 
             if (email.isNotEmpty() && password.isNotEmpty() && username.isNotEmpty()) {
-                // Call the signUp method in AuthViewModel
                 authViewModel.signUp(email, password, this)
 
             }
         }
 
-        // Set onClickListener for the sign-in TextView
         signInTextView.setOnClickListener {
-            // Navigate to the LoginActivity or any other activity for sign-in
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
 
-        // Observe the isUserSignedIn LiveData to determine the authentication state
         authViewModel.isUserSignedIn.observe(this) { isSignedIn ->
             if (isSignedIn) {
 
@@ -57,7 +51,6 @@ class SignupActivity : AppCompatActivity() {
                 userViewModel.userLiveData.observe(this) { userdata ->
                     userViewModel.updateUserName(username)
                     GlobalVariables.currentUser = userdata
-                    // User is signed in, navigate to the MainActivity
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 }

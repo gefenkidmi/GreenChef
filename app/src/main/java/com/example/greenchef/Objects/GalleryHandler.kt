@@ -11,7 +11,6 @@ import androidx.fragment.app.FragmentActivity
 object GalleryHandler {
     const val REQUEST_CODE_PICK_IMAGE = 123
 
-    // Public function to get photo URI from the gallery
     fun getPhotoUriFromGallery(
         activity: FragmentActivity,
         pickImageLauncher: ActivityResultLauncher<Intent>,

@@ -34,11 +34,9 @@ class RecipeAdapter(private var recipes: List<Recipe>,
         val textViewDescription: TextView = itemView.findViewById(R.id.textViewDescription)
         val favoriteCheckBox: CheckBox = itemView.findViewById(R.id.favoriteCheckBox)
         val ratingBar: RatingBar = itemView.findViewById(R.id.ratingBar)
-        //val buttonView: Button = itemView.findViewById(R.id.buttonView)
     }
 
     init {
-        // Sort the recipes list alphabetically by name
         recipes = recipes.sortedWith(compareBy({ it.name }, { it.recipeId }))
     }
 
@@ -51,7 +49,6 @@ class RecipeAdapter(private var recipes: List<Recipe>,
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val recipe = recipes[position]
 
-        // Bind data to views
         holder.textViewRecipeName.text = recipe.name
         holder.textViewDescription.text = recipe.description
         holder.favoriteCheckBox.isChecked = GlobalVariables.currentUser!!.favoriteRecipeIds.contains(recipe.recipeId)
