@@ -1,13 +1,16 @@
 package com.example.greenchef.Activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -16,7 +19,7 @@ import com.example.greenchef.R
 import com.example.greenchef.ViewModels.AuthViewModel
 import com.example.greenchef.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(){
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
@@ -27,9 +30,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
-        toolbar.title = ""
-        setSupportActionBar(toolbar)
+        saveUserDetails()
 
         initNavigation()
 
@@ -66,8 +67,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initNavigation() {
+        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
+        setSupportActionBar(toolbar)
         // Set up Navigation component
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
         // Set up ActionBar with NavController
@@ -85,12 +89,28 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_profile -> {
                     // Check if the selected destination is different from the current one
                     if (binding.bottomNavigationView.selectedItemId != item.itemId) {
-                        navController.popBackStack(R.id.navigation_profile, item.itemId == R.id.navigation_profile)
+                        navController.popBackStack(
+                            R.id.navigation_profile,
+                            item.itemId == R.id.navigation_profile
+                        )
                         navController.navigate(item.itemId)
                     }
                     true
                 }
                 else -> false
+            }
+        }
+    }
+
+    private fun saveUserDetails() {
+        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        authViewModel.currentUser.observe(this) { user ->
+            sharedPreferences.edit {
+                user?.let{
+                    putString("displayName", it.displayName)
+                    putString("email", it.email)
+                    putString("photoUrl", it.photoUrl?.toString())
+                }
             }
         }
     }

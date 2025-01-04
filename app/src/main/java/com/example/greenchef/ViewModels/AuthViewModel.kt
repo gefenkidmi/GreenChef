@@ -54,7 +54,7 @@ class AuthViewModel : ViewModel() {
             }
     }
 
-    private fun updateDisplayName(name: String) {
+    fun updateDisplayName(name: String) {
         firebaseRepository.updateDisplayName(name)
     }
 

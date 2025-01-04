@@ -1,26 +1,35 @@
 package com.example.greenchef.Fragments
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.content.edit
+import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import com.example.greenchef.DialogFragments.EditDisplayNameDialogFragment
+import com.example.greenchef.DialogFragments.EditProfileImageDialogFragment
 import com.example.greenchef.R
+import com.example.greenchef.ViewModels.AuthViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfileFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class ProfileFragment : Fragment() {
-    // TODO: Rename and change types of parameters
+class ProfileFragment : Fragment(),
+    EditDisplayNameDialogFragment.EditUsernameDialogListener,
+    EditProfileImageDialogFragment.EditProfileImageDialogListener {
+
     private var param1: String? = null
     private var param2: String? = null
+    private val authViewModel: AuthViewModel by viewModels()
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,20 +43,67 @@ class ProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        val displayNameTextView: TextView = view.findViewById(R.id.displayNameTextView)
+        val emailTextView: TextView = view.findViewById(R.id.emailTextView)
+        val userPhotoImageView: ImageView = view.findViewById(R.id.userPhotoImageView)
+
+        sharedPreferences = requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val displayName = sharedPreferences.getString("displayName", "")
+        val email = sharedPreferences.getString("email", "")
+        val photoUrl = sharedPreferences.getString("photoUrl", "")
+
+        displayNameTextView.text = displayName
+        emailTextView.text = email
+        userPhotoImageView.setImageURI(photoUrl?.toUri())
+
+        displayNameTextView.setOnClickListener {
+            showEditUsernameDialog()
+        }
+        userPhotoImageView.setOnClickListener {
+            showEditProfileImageDialog()
+        }
+
+        return view
+    }
+
+    private fun showEditUsernameDialog() {
+        val dialogFragment = EditDisplayNameDialogFragment()
+        dialogFragment.show(childFragmentManager, "EditUsernameDialogFragment")
+    }
+
+    private fun showEditProfileImageDialog() {
+        val dialogFragment = EditProfileImageDialogFragment()
+        dialogFragment.show(childFragmentManager, "EditProfileImageDialogFragment")
+    }
+
+    override fun onDisplayNameUpdated(displayName: String) {
+        authViewModel.updateDisplayName(displayName)
+
+        // Update the display name in SharedPreferences
+        sharedPreferences.edit {
+            putString("displayName", displayName)
+        }
+
+        val displayNameTextView: TextView? = view?.findViewById(R.id.displayNameTextView)
+        displayNameTextView?.text = displayName
+        Log.d("NameUpdate", "Updated display name")
+    }
+
+    override fun onImageUpdated(imageUri: String) {
+        authViewModel.updateUserPhoto(imageUri.toUri())
+
+        // Update the photo URI in SharedPreferences
+        sharedPreferences.edit {
+            putString("photoUrl", imageUri)
+        }
+
+        val userPhotoImageView: ImageView? = view?.findViewById(R.id.userPhotoImageView)
+        userPhotoImageView?.setImageURI(imageUri.toUri())
+        Log.d("ImageUpdate", "Updated profile image")
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProfileFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             ProfileFragment().apply {
