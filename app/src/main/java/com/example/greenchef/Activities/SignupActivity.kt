@@ -34,6 +34,7 @@ class SignupActivity : AppCompatActivity() {
             if (email.isNotEmpty() && password.isNotEmpty() && username.isNotEmpty()) {
                 // Call the signUp method in AuthViewModel
                 authViewModel.signUp(email, password, username, this)
+
             }
         }
 
