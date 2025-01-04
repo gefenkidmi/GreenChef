@@ -107,8 +107,8 @@ class ProfileFragment : Fragment(),
             userData?.let {
                 if (userData != GlobalVariables.currentUser) {
                     GlobalVariables.currentUser = userData
-                    updateUI(userData)
                 }
+                updateUI(userData)
             }
         }
 

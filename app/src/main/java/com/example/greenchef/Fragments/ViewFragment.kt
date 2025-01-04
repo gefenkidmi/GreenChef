@@ -18,13 +18,15 @@ import com.example.greenchef.ViewModels.AuthViewModel
 import com.example.greenchef.ViewModels.RecipeViewModel
 import com.example.greenchef.ViewModels.UserViewModel
 import com.squareup.picasso.Picasso
+import kotlin.properties.Delegates
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val RECIPE_PARAM = "recipe"
+private const val RATING = "rating"
 
 class ViewFragment : Fragment() {
 
-    private var recipe: Recipe? = null
+    private var rating: Float? = null
 
     private lateinit var recipeNameTextView: TextView
     private lateinit var editRecipeButton: ImageButton
@@ -33,6 +35,8 @@ class ViewFragment : Fragment() {
     private lateinit var recipeIngredientsTextView: TextView
     private lateinit var recipeProcedureTextView: TextView
     private lateinit var recipeRatingBar: RatingBar
+    private lateinit var recipe: Recipe
+    private var numberOfRatings by Delegates.notNull<Int>()
 
     private val recipeViewModel: RecipeViewModel by viewModels()
     private val userViewModel: UserViewModel = UserViewModel(GlobalVariables.currentUser!!.userId)
@@ -40,7 +44,7 @@ class ViewFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            recipe = it.getParcelable(RECIPE_PARAM)
+            recipe = it.getParcelable(RECIPE_PARAM)!!
         }
     }
 
@@ -53,10 +57,9 @@ class ViewFragment : Fragment() {
 
         getViews(view)
         loadRecipeData()
+        setRating()
 
         recipeViewModel.setContextAndDB(requireContext())
-
-
 
         return view
     }
@@ -83,7 +86,7 @@ class ViewFragment : Fragment() {
                         }
                     })
             } else {
-                recipeImageView.setImageResource(R.drawable.login_image)
+                recipeImageView.setImageResource(R.drawable.main_logo)
                 recipeImageView.scaleType = ImageView.ScaleType.FIT_XY
             }
             if (GlobalVariables.currentUser?.recipeIds?.contains(it.recipeId) == true) {
@@ -100,5 +103,30 @@ class ViewFragment : Fragment() {
         recipeIngredientsTextView = view.findViewById(R.id.ingredientsTextView)
         recipeProcedureTextView = view.findViewById(R.id.procedureTextView)
         recipeRatingBar = view.findViewById(R.id.recipeRatingBar)
+    }
+
+    private fun setRating() {
+        this.rating = GlobalVariables.currentUser?.ratedRecipes?.get(recipe.recipeId)
+        this.rating?.let {
+            recipeRatingBar.rating = it
+        }
+        recipeRatingBar.setOnRatingBarChangeListener { _, rating, _ ->
+            this.rating?.let {
+                userViewModel.removeUserRatedRecipe(recipe.recipeId)
+                recipeViewModel.removeRating(recipe, it, onSuccess = {recipeAfterRemove ->
+                    userViewModel.addUserRatedRecipe(recipe.recipeId, rating)
+                    recipeViewModel.addRating(recipeAfterRemove, rating, onSuccess = { recipeAfterAdd ->
+                        this.recipe = recipeAfterAdd
+                        this.rating = rating
+                    })
+                })
+            } ?: run {
+                userViewModel.addUserRatedRecipe(recipe.recipeId, rating)
+                recipeViewModel.addRating(recipe, rating, onSuccess = {recipeAfterAdd ->
+                    this.recipe = recipeAfterAdd
+                    this.rating = rating
+                })
+            }
+        }
     }
 }

@@ -40,10 +40,14 @@ object FirestoreModel {
 
     fun updateRecipe(recipe: Recipe, listener: () -> Unit) {
         val db = FirebaseFirestore.getInstance()
+
         db.collection("recipes")
             .document(recipe.recipeId)
             .set(recipe)
-            .addOnSuccessListener { listener() }
+            .addOnSuccessListener {
+                Log.d("updateRecipe", "Update successful for recipeId: ${recipe.recipeId}")
+                listener() }
+            .addOnFailureListener { Log.d("updateRecipe", "failed: ${it.message}") }
     }
 
     // Function to upload an image to Firestore Storage and get the URL
@@ -68,4 +72,5 @@ object FirestoreModel {
                 onFailure()
             }
     }
+
 }

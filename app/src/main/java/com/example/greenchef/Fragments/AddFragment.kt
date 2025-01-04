@@ -114,7 +114,7 @@ class AddFragment : Fragment() {
     private fun initSpinnerCategory() {
         val adapter = ArrayAdapter(
             requireContext(),
-            R.layout.spinner_item_layout, // Use the custom layout
+            R.layout.spiner_item_layout, // Use the custom layout
             localDataRepository.categories
         )
 

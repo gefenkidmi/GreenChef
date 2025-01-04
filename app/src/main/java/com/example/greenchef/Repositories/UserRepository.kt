@@ -17,7 +17,7 @@ class UserRepository {
     private val storage: FirebaseStorage = FirebaseStorage.getInstance()
 
     // Function to initialize user document
-    fun initializeUserDocument(userId: String) {
+    private fun initializeUserDocument(userId: String) {
         val initialUserData = hashMapOf(
             "userId" to userId,
             "name" to "",
@@ -46,7 +46,7 @@ class UserRepository {
             .document(userId)
             .get()
             .addOnSuccessListener { document ->
-                if(document != null) {
+                if(document.exists()) {
                     onSuccess(document.toObject(User::class.java)!!)
                 } else {
                     initializeUserDocument(userId)
@@ -206,5 +206,41 @@ class UserRepository {
             },
             onFailure = onFailure
         )
+    }
+
+    fun removeUserRatedRecipe(userId: String, recipeId: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
+        val fieldUpdate = mapOf(
+            "ratedRecipes.$recipeId" to FieldValue.delete()
+        )
+
+        db.collection("users")
+            .document(userId)
+            .update(fieldUpdate)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                // Handle failure
+                Log.d("removeUserRatedRecipe", "failed: ${exception.message}")
+                onFailure()
+            }
+    }
+
+    fun addUserRatedRecipe(userId: String, recipeId: String, rating: Float, onSuccess: () -> Unit, onFailure: () -> Unit) {
+        val fieldUpdate = mapOf(
+            "ratedRecipes.$recipeId" to rating
+        )
+
+        db.collection("users")
+            .document(userId)
+            .update(fieldUpdate)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                // Handle failure
+                Log.d("addUserRatedRecipe", "failed: ${exception.message}")
+                onFailure()
+            }
     }
 }

@@ -11,11 +11,12 @@ import com.example.greenchef.Dao.RecipeDao
 import com.example.greenchef.DataClass.Recipe
 import com.example.greenchef.Models.FirestoreModel
 import com.example.greenchef.Objects.RecipeLocalTime
+import com.google.android.gms.tasks.OnSuccessListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class RecipeViewModel() : ViewModel() {
+class RecipeViewModel : ViewModel() {
     private lateinit var context: Context
     private lateinit var recipeDao: RecipeDao
     private val _allRecipes: MutableLiveData<List<Recipe>> = MutableLiveData()
@@ -66,7 +67,33 @@ class RecipeViewModel() : ViewModel() {
             })
         }
     }
+    fun removeRating(recipe: Recipe, rating: Float, onSuccess: (Recipe) -> Unit) {
+        val newRecipe = recipe.copy()
+        val newRating = ((newRecipe.rating * newRecipe.numberOfRatings) - rating) / (newRecipe.numberOfRatings - 1)
+        newRecipe.rating = newRating
+        newRecipe.numberOfRatings -= 1
+        newRecipe.lastUpdated = System.currentTimeMillis()
+        FirestoreModel.updateRecipe(newRecipe) {
+            CoroutineScope(Dispatchers.IO).launch {
+                recipeDao.insert(newRecipe)
+                onSuccess(newRecipe)
+            }
+        }
+    }
 
+    fun addRating(recipe: Recipe, rating: Float, onSuccess: (Recipe) -> Unit) {
+        val newRecipe = recipe.copy()
+        val newRating = ((newRecipe.rating * newRecipe.numberOfRatings) + rating) / (newRecipe.numberOfRatings + 1)
+        newRecipe.rating = newRating
+        newRecipe.numberOfRatings += 1
+        newRecipe.lastUpdated = System.currentTimeMillis()
+        FirestoreModel.updateRecipe(newRecipe) {
+            CoroutineScope(Dispatchers.IO).launch {
+                recipeDao.insert(newRecipe)
+                onSuccess(newRecipe)
+            }
+        }
+    }
     private fun createRecipeWithoutUploadingImage(recipe: Recipe, listener: (Recipe) -> Unit) {
         FirestoreModel.createRecipe(recipe){recipeWithId ->
             CoroutineScope(Dispatchers.IO).launch {

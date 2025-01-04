@@ -9,7 +9,7 @@ data class User(
     val photoUrl: String = "",
     val recipeIds: List<String> = emptyList(),
     val favoriteRecipeIds: List<String> = emptyList(),
-    val ratedRecipes: Map<String, Int> = emptyMap()
+    val ratedRecipes: Map<String, Float> = emptyMap()
 ) {
     // Add a no-argument constructor
     constructor() : this("", "", "", emptyList(), emptyList(), emptyMap())
