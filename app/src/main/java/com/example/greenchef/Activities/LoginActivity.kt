@@ -50,10 +50,12 @@ class LoginActivity : AppCompatActivity() {
                 val userid = authViewModel.currentUser.value!!.uid
                 val userViewModel = UserViewModel(userid)
                 userViewModel.userLiveData.observe(this) { userdata ->
-                    GlobalVariables.currentUser = userdata
-                    // User is signed in, navigate to the MainActivity
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+                    if (userdata != null) {
+                        GlobalVariables.currentUser = userdata
+                        // User is signed in, navigate to the MainActivity
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    }
                 }
             }
         }

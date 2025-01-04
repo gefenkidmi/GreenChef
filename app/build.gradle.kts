@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -57,6 +58,11 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.picasso)
+    implementation(libs.room.runtime)
+    implementation(libs.gson)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.room.ktx)
+    kapt(libs.room.complier)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

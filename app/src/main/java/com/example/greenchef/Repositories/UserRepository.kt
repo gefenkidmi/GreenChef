@@ -3,6 +3,8 @@ package com.example.greenchef.Repositories
 import android.net.Uri
 import android.util.Log
 import com.example.greenchef.DataClass.User
+import com.example.greenchef.Models.FirestoreModel
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
@@ -44,9 +46,11 @@ class UserRepository {
             .document(userId)
             .get()
             .addOnSuccessListener { document ->
-                if (document != null) {
-                    val user = document.toObject(User::class.java)
-                    user?.let { onSuccess(it) }
+                if(document != null) {
+                    onSuccess(document.toObject(User::class.java)!!)
+                } else {
+                    initializeUserDocument(userId)
+                    onSuccess(User(userId, "", "", emptyList(), emptyList(), emptyMap()))
                 }
             }
             .addOnFailureListener { exception ->
@@ -98,9 +102,13 @@ class UserRepository {
         onSuccess: () -> Unit,
         onFailure: () -> Unit
     ) {
+        val fieldUpdate = mapOf(
+            "recipeIds" to FieldValue.arrayUnion(*newRecipeIds.toTypedArray())
+        )
+
         db.collection("users")
             .document(userId)
-            .update("recipeIds", newRecipeIds)
+            .update(fieldUpdate)
             .addOnSuccessListener {
                 onSuccess()
             }
@@ -112,21 +120,48 @@ class UserRepository {
     }
 
     // Function to update user favorite recipe IDs in Firestore
-    fun updateUserFavoriteRecipeIds(
+    fun updateUserFavoriteRecipeId(
         userId: String,
-        newFavoriteRecipeIds: List<String>,
+        newFavoriteRecipeId: String,
         onSuccess: () -> Unit,
         onFailure: () -> Unit
     ) {
+        val fieldUpdate = mapOf(
+            "favoriteRecipeIds" to FieldValue.arrayUnion(newFavoriteRecipeId)
+        )
+
         db.collection("users")
             .document(userId)
-            .update("favoriteRecipeIds", newFavoriteRecipeIds)
+            .update(fieldUpdate)
             .addOnSuccessListener {
                 onSuccess()
             }
             .addOnFailureListener { exception ->
                 // Handle failure
                 Log.d("updateUserFavoriteRecipeIds", "failed: ${exception.message}")
+                onFailure()
+            }
+    }
+
+    fun removeUserFavoriteRecipeId(
+        userId: String,
+        recipeId: String,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
+    ) {
+        val fieldUpdate = mapOf(
+            "favoriteRecipeIds" to FieldValue.arrayRemove(recipeId)
+        )
+
+        db.collection("users")
+            .document(userId)
+            .update(fieldUpdate)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                // Handle failure
+                Log.d("removeUserFavoriteRecipeIds", "failed: ${exception.message}")
                 onFailure()
             }
     }
@@ -153,7 +188,7 @@ class UserRepository {
 
     // Function to update user photo URL in Firestore
     fun updateUserPhoto(userId: String, imageUri: Uri, onSuccess: (String) -> Unit, onFailure: () -> Unit) {
-        uploadImage(imageUri,
+        FirestoreModel.uploadImage(imageUri,
             onSuccess = { imageUrl ->
                 // Update the user document with the new photoUrl
                 db.collection("users")
@@ -171,28 +206,5 @@ class UserRepository {
             },
             onFailure = onFailure
         )
-    }
-
-    // Function to upload an image to Firestore Storage and get the URL
-    private fun uploadImage(imageUri: Uri, onSuccess: (String) -> Unit, onFailure: () -> Unit) {
-        val storageRef: StorageReference = storage.reference
-        val imageFileName = UUID.randomUUID().toString() // Generate a unique filename for the image
-        val imageRef: StorageReference = storageRef.child("user_images/$imageFileName")
-
-        // Upload the image to Firebase Storage
-        imageRef.putFile(imageUri)
-            .addOnSuccessListener { taskSnapshot ->
-                // Image uploaded successfully
-                imageRef.downloadUrl.addOnSuccessListener { uri ->
-                    // Get the download URL of the uploaded image
-                    val imageUrl = uri.toString()
-                    onSuccess(imageUrl)
-                }
-            }
-            .addOnFailureListener { exception ->
-                // Handle failure
-                Log.d("uploadImage", "failed: ${exception.message}")
-                onFailure()
-            }
     }
 }

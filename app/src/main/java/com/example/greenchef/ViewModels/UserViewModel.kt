@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.greenchef.DataClass.User
+import com.example.greenchef.Objects.GlobalVariables
 import com.example.greenchef.Repositories.UserRepository
 import java.util.*
 
@@ -15,9 +16,6 @@ class UserViewModel(private val userId: String) : ViewModel() {
     val userLiveData: LiveData<User> get() = _userLiveData
 
     init {
-        // Initialize user document on initialization
-        userRepository.initializeUserDocument(userId)
-        // Fetch user data on initialization
         fetchUser()
     }
 
@@ -25,6 +23,7 @@ class UserViewModel(private val userId: String) : ViewModel() {
         userRepository.fetchUser(userId,
             onSuccess = { user ->
                 _userLiveData.postValue(user)
+                GlobalVariables.currentUser = user
             },
             onFailure = {
                 // Handle failure
@@ -68,8 +67,22 @@ class UserViewModel(private val userId: String) : ViewModel() {
         )
     }
 
-    fun updateUserRecipeIds(newRecipeIds: List<String>) {
+    fun updateUserRecipeIds(newRecipeIds: List<String>, onSuccess: () -> Unit, onFailure: () -> Unit) {
         userRepository.updateUserRecipeIds(userId, newRecipeIds,
+            onSuccess = {
+                // After a successful update, fetch the user again to reflect changes
+                fetchUser()
+                onSuccess()
+            },
+            onFailure = {
+                onFailure()
+                // Handle failure
+            }
+        )
+    }
+
+    fun updateUserFavoriteRecipeId(newFavoriteRecipeIds: String) {
+        userRepository.updateUserFavoriteRecipeId(userId, newFavoriteRecipeIds,
             onSuccess = {
                 // After a successful update, fetch the user again to reflect changes
                 fetchUser()
@@ -80,8 +93,8 @@ class UserViewModel(private val userId: String) : ViewModel() {
         )
     }
 
-    fun updateUserFavoriteRecipeIds(newFavoriteRecipeIds: List<String>) {
-        userRepository.updateUserFavoriteRecipeIds(userId, newFavoriteRecipeIds,
+    fun removeUserFavoriteRecipeId(favoriteRecipeId: String) {
+        userRepository.removeUserFavoriteRecipeId(userId, favoriteRecipeId,
             onSuccess = {
                 // After a successful update, fetch the user again to reflect changes
                 fetchUser()

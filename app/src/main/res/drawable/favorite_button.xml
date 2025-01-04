@@ -1,0 +1,11 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/baseline_star_border_48"
+        android:state_checked="false"
+        />
+    <item
+        android:drawable="@drawable/baseline_star_48_with_color"
+        android:state_checked="true"
+        />
+    <item android:drawable="@drawable/baseline_star_border_48" />
+</selector>
