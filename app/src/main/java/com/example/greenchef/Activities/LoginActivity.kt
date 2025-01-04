@@ -5,20 +5,21 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.example.greenchef.Global.GlobalVariables
 import com.example.greenchef.R
 import com.example.greenchef.ViewModels.AuthViewModel
+import com.example.greenchef.ViewModels.UserViewModel
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var authViewModel: AuthViewModel
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-        authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
 
         // Initialize UI components
         val usernameEditText: EditText = findViewById(R.id.et_username)
@@ -47,9 +48,14 @@ class LoginActivity : AppCompatActivity() {
         // Observe the isUserSignedIn LiveData to determine the authentication state
         authViewModel.isUserSignedIn.observe(this) { isSignedIn ->
             if (isSignedIn) {
-                // User is signed in, navigate to the MainActivity
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+                val userid = authViewModel.currentUser.value!!.uid
+                val userViewModel = UserViewModel(userid)
+                userViewModel.userLiveData.observe(this) { userdata ->
+                    GlobalVariables.currentUser = userdata
+                    // User is signed in, navigate to the MainActivity
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }
             }
         }
     }
