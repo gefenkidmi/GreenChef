@@ -1,16 +1,12 @@
 package com.example.greenchef.Activities
 
 import android.content.Intent
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.WindowInsets
-import android.view.WindowManager
 import androidx.activity.viewModels
-import com.example.greenchef.AppConfiguration
-import com.example.greenchef.Global.GlobalVariables
+import com.example.greenchef.Objects.GlobalVariables
 import com.example.greenchef.R
 import com.example.greenchef.ViewModels.AuthViewModel
 import com.example.greenchef.ViewModels.UserViewModel

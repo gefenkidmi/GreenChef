@@ -7,8 +7,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import com.example.greenchef.Global.GlobalVariables
+import com.example.greenchef.Objects.GlobalVariables
 import com.example.greenchef.R
 import com.example.greenchef.ViewModels.AuthViewModel
 import com.example.greenchef.ViewModels.UserViewModel
