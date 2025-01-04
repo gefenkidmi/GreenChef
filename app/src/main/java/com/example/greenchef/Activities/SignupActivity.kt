@@ -8,8 +8,10 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.example.greenchef.Global.GlobalVariables
 import com.example.greenchef.R
 import com.example.greenchef.ViewModels.AuthViewModel
+import com.example.greenchef.ViewModels.UserViewModel
 
 class SignupActivity : AppCompatActivity() {
 
@@ -31,9 +33,10 @@ class SignupActivity : AppCompatActivity() {
             val password = passwordEditText.text.toString().trim()
             val username = usernameEditText.text.toString().trim()
 
+
             if (email.isNotEmpty() && password.isNotEmpty() && username.isNotEmpty()) {
                 // Call the signUp method in AuthViewModel
-                authViewModel.signUp(email, password, username, this)
+                authViewModel.signUp(email, password, this)
 
             }
         }
@@ -48,9 +51,17 @@ class SignupActivity : AppCompatActivity() {
         // Observe the isUserSignedIn LiveData to determine the authentication state
         authViewModel.isUserSignedIn.observe(this) { isSignedIn ->
             if (isSignedIn) {
-                // User is signed in, navigate to the MainActivity
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+
+                val username = usernameEditText.text.toString().trim()
+                val userid = authViewModel.currentUser.value!!.uid
+                val userViewModel = UserViewModel(userid)
+                userViewModel.updateUserName(username)
+                userViewModel.userLiveData.observe(this) { userdata ->
+                    GlobalVariables.currentUser = userdata
+                    // User is signed in, navigate to the MainActivity
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }
             }
         }
     }
