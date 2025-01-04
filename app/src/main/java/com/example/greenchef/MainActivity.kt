@@ -20,36 +20,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         auth = Firebase.auth
-
-        val tvSignup : TextView = findViewById(R.id.tv_signup)
-        val btnLogin : Button = findViewById(R.id.btn_login)
-        val etUsername : EditText = findViewById(R.id.et_username)
-        val etPassword : EditText = findViewById(R.id.et_password)
-
-        btnLogin.setOnClickListener {
-            val email = etUsername.text.toString()
-            val password = etPassword.text.toString()
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        Log.d(TAG, "signInWithEmail:success")
-                        val user = auth.currentUser
-                        // DO SOMETHING
-                    } else {
-                        Log.w(TAG, "signInWithEmail:failure", task.exception)
-                        Toast.makeText(
-                            baseContext,
-                            "Authentication failed.",
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                    }
-                }
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
         }
-
-//        tvSignup.setOnClickListener{
-//            val intent = Intent(this, SignupActivity::class.java)
-//            startActivity(intent)
-//            finish()
-//        }
     }
 }
