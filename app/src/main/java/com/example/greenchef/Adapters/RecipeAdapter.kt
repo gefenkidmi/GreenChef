@@ -1,20 +1,21 @@
 package com.example.greenchef.Adapters
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.CheckBox
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.greenchef.DataClass.Recipe
+import com.example.greenchef.Fragments.ProfileFragment
+import com.example.greenchef.Fragments.ProfileFragmentDirections
 import com.example.greenchef.Objects.GlobalVariables
 import com.example.greenchef.R
 import com.example.greenchef.ViewModels.UserViewModel
@@ -29,6 +30,7 @@ class RecipeAdapter(private var recipes: List<Recipe>,
     private var filteredRecipes: List<Recipe> = recipes
 
     class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val editButton: ImageButton = itemView.findViewById(R.id.buttonViewEdit)
         val imageViewRecipe: ImageView = itemView.findViewById(R.id.imageViewRecipe)
         val textViewRecipeName: TextView = itemView.findViewById(R.id.textViewRecipeName)
         val textViewDescription: TextView = itemView.findViewById(R.id.textViewDescription)
@@ -37,6 +39,7 @@ class RecipeAdapter(private var recipes: List<Recipe>,
     }
 
     init {
+        // Sort the recipes list alphabetically by name
         recipes = recipes.sortedWith(compareBy({ it.name }, { it.recipeId }))
     }
 
@@ -49,10 +52,18 @@ class RecipeAdapter(private var recipes: List<Recipe>,
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val recipe = recipes[position]
 
+        // Bind data to views
         holder.textViewRecipeName.text = recipe.name
         holder.textViewDescription.text = recipe.description
         holder.favoriteCheckBox.isChecked = GlobalVariables.currentUser!!.favoriteRecipeIds.contains(recipe.recipeId)
         holder.ratingBar.rating = recipe.rating
+        setCheckboxIcon(holder.favoriteCheckBox.isChecked, recipe.recipeId, holder)
+
+        if (fragmentContext is ProfileFragment) {
+            holder.editButton.visibility = View.VISIBLE
+        } else {
+            holder.editButton.visibility = View.GONE
+        }
 
         loadImageToView(holder, recipe)
         setClickListeners(holder, recipe)
@@ -65,11 +76,17 @@ class RecipeAdapter(private var recipes: List<Recipe>,
             fragmentContext.findNavController().navigate(R.id.viewFragment, bundle)
         }
         holder.favoriteCheckBox.setOnClickListener {
+            setCheckboxIcon(holder.favoriteCheckBox.isChecked, recipe.recipeId, holder)
             if (holder.favoriteCheckBox.isChecked) {
                 userViewModel.updateUserFavoriteRecipeId(recipe.recipeId)
             } else {
                 userViewModel.removeUserFavoriteRecipeId(recipe.recipeId)
             }
+        }
+
+        holder.editButton.setOnClickListener {
+            val action=ProfileFragmentDirections.actionNavigationProfileToEditFragment(recipe)
+            fragmentContext.findNavController().navigate(action)
         }
     }
 
@@ -84,4 +101,12 @@ class RecipeAdapter(private var recipes: List<Recipe>,
         }
     }
     override fun getItemCount(): Int = recipes.size
+
+    private fun setCheckboxIcon(isChecked:Boolean, recipeId: String, holder: RecipeViewHolder){
+        if (isChecked) {
+            holder.favoriteCheckBox.buttonDrawable=ResourcesCompat.getDrawable(fragmentContext.resources, R.drawable.baseline_favorite_24_red, null)
+        } else {
+            holder.favoriteCheckBox.buttonDrawable= ResourcesCompat.getDrawable(fragmentContext.resources, R.drawable.baseline_favorite_border_24, null)
+        }
+    }
 }

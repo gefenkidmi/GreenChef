@@ -8,6 +8,7 @@ import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.UUID
@@ -62,16 +63,30 @@ object FirestoreModel {
                 listener(newRecipe)
             }
             .addOnFailureListener {
-                Log.d("updateRecipe", "failed: ${it.message}")
+                Log.d("createRecipe", "failed: ${it.message}")
+            }
+    }
+
+    fun deleteRecipe(recipeId: String, listener: () -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("recipes")
+            .document(recipeId)
+            .delete()
+            .addOnSuccessListener {
+                listener()
+            }
+            .addOnFailureListener {
+                Log.d("deleteRecipe", "failed: ${it.message}")
             }
     }
 
     fun updateRecipe(recipe: Recipe, listener: () -> Unit) {
         val db = FirebaseFirestore.getInstance()
+        Log.d("updateRecipe", "Document reference: recipes/${recipe.recipeId}")
 
         db.collection("recipes")
             .document(recipe.recipeId)
-            .set(recipe)
+            .set(recipe, SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("updateRecipe", "Update successful for recipeId: ${recipe.recipeId}")
                 listener() }

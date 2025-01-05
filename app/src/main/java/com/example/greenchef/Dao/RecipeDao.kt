@@ -20,7 +20,7 @@ interface RecipeDao {
     @Query("SELECT * FROM recipes WHERE ownerId = :ownerId")
     fun getByOwner(ownerId: String): LiveData<List<Recipe>>
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(recipe: Recipe)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

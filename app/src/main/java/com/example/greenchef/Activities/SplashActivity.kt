@@ -28,6 +28,7 @@ class SplashActivity : AppCompatActivity() {
             if (isSignedIn) {
                 val userid = authViewModel.currentUser.value!!.uid
                 val userViewModel = UserViewModel(userid)
+
                 userViewModel.userLiveData.observe(this) { userdata ->
                     GlobalVariables.currentUser = userdata
                     startActivity(Intent(this, MainActivity::class.java))

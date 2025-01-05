@@ -2,6 +2,7 @@ package com.example.greenchef.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -15,16 +16,29 @@ import com.example.greenchef.ViewModels.UserViewModel
 class LoginActivity : AppCompatActivity() {
 
     private val authViewModel: AuthViewModel by viewModels()
+    private lateinit var usernameEditText: EditText
+    private lateinit var passwordEditText: EditText
+    private lateinit var loginButton: Button
+    private lateinit var signUpTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val usernameEditText: EditText = findViewById(R.id.et_username)
-        val passwordEditText: EditText = findViewById(R.id.et_password)
-        val loginButton: Button = findViewById(R.id.btn_login)
-        val signUpTextView: TextView = findViewById(R.id.tv_signup)
+        setViews()
+        setButtonListeners()
+        observeUserStatus()
 
+    }
+
+    private fun setViews(){
+        usernameEditText = findViewById(R.id.et_username)
+        passwordEditText = findViewById(R.id.et_password)
+        loginButton = findViewById(R.id.btn_login)
+        signUpTextView = findViewById(R.id.tv_signup)
+    }
+
+    private fun setButtonListeners(){
         loginButton.setOnClickListener {
             val email = usernameEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
@@ -38,7 +52,9 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, SignupActivity::class.java))
             finish()
         }
+    }
 
+    private fun observeUserStatus(){
         authViewModel.isUserSignedIn.observe(this) { isSignedIn ->
             if (isSignedIn) {
                 val userid = authViewModel.currentUser.value!!.uid

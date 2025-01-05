@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity(){
                 authViewModel.signOut()
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -69,9 +68,7 @@ class MainActivity : AppCompatActivity(){
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
-
         setupActionBarWithNavController(navController)
-
         binding.bottomNavigationView.setupWithNavController(navController)
 
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
@@ -80,6 +77,7 @@ class MainActivity : AppCompatActivity(){
                 R.id.navigation_add,
                 R.id.navigation_favorites,
                 R.id.navigation_profile -> {
+
                     if (binding.bottomNavigationView.selectedItemId != item.itemId) {
                         navController.popBackStack(
                             R.id.navigation_profile,

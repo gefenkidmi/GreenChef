@@ -75,6 +75,26 @@ class UserRepository {
             }
     }
 
+    fun removeUserRecipe(userId: String, recipeId: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
+        val fieldUpdate = mapOf(
+            "recipeIds" to FieldValue.arrayRemove(recipeId),
+            "favoriteRecipeIds" to FieldValue.arrayRemove(recipeId),
+            "ratedRecipes.$recipeId" to FieldValue.delete()
+        )
+
+        db.collection("users")
+            .document(userId)
+            .update(fieldUpdate)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                // Handle failure
+                Log.d("removeUserRecipe", "failed: ${exception.message}")
+                onFailure()
+            }
+    }
+
     // Function to update user name in Firestore
     fun updateUserName(
         userId: String,

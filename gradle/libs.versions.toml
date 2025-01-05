@@ -45,10 +45,13 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomRuntime"}
 room-complier = { group = "androidx.room", name = "room-compiler", version.ref = "roomRuntime"}
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomRuntime"}
+navigation-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version = "2.7.7" }
+navigation-ui = { module = "androidx.navigation:navigation-ui-ktx", version = "2.7.7" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleService" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt" }
+androidx-navigation-safe-args = { id = "androidx.navigation.safeargs.kotlin", version = "2.7.7" }
 
