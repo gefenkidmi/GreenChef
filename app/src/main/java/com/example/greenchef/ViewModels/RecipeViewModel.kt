@@ -84,10 +84,36 @@ class RecipeViewModel : ViewModel() {
             })
         }
     }
+
+    fun updateRecipe(recipe: Recipe, listener: (Recipe) -> Unit) {
+        val newRecipe = recipe.copy()
+        if (newRecipe.imageUri == "null") {
+            updateRecipeWithoutUploadingImage(newRecipe, listener)
+        } else {
+            FirestoreModel.uploadImage(newRecipe.imageUri.toUri(), onSuccess = { imageUri ->
+                newRecipe.imageUri = imageUri
+                updateRecipeWithoutUploadingImage(newRecipe, listener)
+            }, onFailure = {
+                // Handle failure
+            })
+        }
+    }
+
+    fun deleteRecipe(recipeId: String, onSuccess: () -> Unit) {
+        FirestoreModel.deleteRecipe(recipeId) {
+            CoroutineScope(Dispatchers.IO).launch {
+                recipeDao.deleteById(recipeId)
+                onSuccess()
+            }
+        }
+    }
     fun removeRating(recipe: Recipe, rating: Float, onSuccess: (Recipe) -> Unit) {
         val newRecipe = recipe.copy()
-        val newRating = ((newRecipe.rating * newRecipe.numberOfRatings) - rating) / (newRecipe.numberOfRatings - 1)
-        newRecipe.rating = newRating
+        if (newRecipe.numberOfRatings == 1) {
+            newRecipe.rating = 0.0f
+        } else {
+            newRecipe.rating = ((newRecipe.rating * newRecipe.numberOfRatings) - rating) / (newRecipe.numberOfRatings - 1)
+        }
         newRecipe.numberOfRatings -= 1
         newRecipe.lastUpdated = System.currentTimeMillis()
         FirestoreModel.updateRecipe(newRecipe) {
@@ -116,6 +142,15 @@ class RecipeViewModel : ViewModel() {
             CoroutineScope(Dispatchers.IO).launch {
                 recipeDao.insert(recipeWithId)
                 listener(recipeWithId)
+            }
+        }
+    }
+
+    private fun updateRecipeWithoutUploadingImage(recipe: Recipe, listener: (Recipe) -> Unit) {
+        FirestoreModel.updateRecipe(recipe){
+            CoroutineScope(Dispatchers.IO).launch {
+                recipeDao.update(recipe)
+                listener(recipe)
             }
         }
     }

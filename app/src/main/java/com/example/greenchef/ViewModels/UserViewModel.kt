@@ -43,6 +43,19 @@ class UserViewModel(private val userId: String) : ViewModel() {
         )
     }
 
+    fun removeUserRecipe(recipeId: String, onSuccess: () -> Unit) {
+        userRepository.removeUserRecipe(userId, recipeId,
+            onSuccess = {
+                // After a successful update, fetch the user again to reflect changes
+                fetchUser()
+                onSuccess()
+            },
+            onFailure = {
+                // Handle failure
+            }
+        )
+    }
+
     fun updateUserName(newName: String) {
         userRepository.updateUserName(userId, newName,
             onSuccess = {

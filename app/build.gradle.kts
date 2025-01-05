@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.androidx.navigation.safe.args)
+
 }
 
 android {
@@ -62,6 +64,8 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.room.ktx)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     kapt(libs.room.complier)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
