@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import com.example.greenchef.DataClass.Comment
 import com.example.greenchef.DataClass.Recipe
+import com.example.greenchef.DataClass.User
 import com.example.greenchef.Objects.GlobalVariables
 import com.example.greenchef.Objects.RecipeLocalTime
 import com.google.android.gms.tasks.Task
@@ -19,46 +20,6 @@ import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
 object FirestoreModel {
-//    fun getAllRecipes(since: Long, listener: (List<Recipe>) -> Unit) {
-//        val db = FirebaseFirestore.getInstance()
-//        db.collection("recipes")
-//            .whereGreaterThan(RecipeLocalTime.LAST_UPDATED, since)
-//            .get()
-//            .addOnSuccessListener { result ->
-//                val recipes = mutableListOf<Recipe>()
-//                for (document in result) {
-//                    val recipe = document.toObject(Recipe::class.java)
-//
-//                    // Fetch comments for each recipe
-//                    db.collection("recipes")
-//                        .document(recipe.recipeId)
-//                        .collection("comments")
-//                        .get()
-//                        .addOnSuccessListener { commentsResult ->
-//                            // Map comments to the respective recipe
-//                            val recipeWithComments = recipe.copy()
-//                            val comments =
-//                                commentsResult.documents.map { it.toObject(Comment::class.java)!! }
-//                            recipeWithComments.comments = comments
-//                            recipes.add(recipeWithComments)
-//                        }
-//                        .addOnFailureListener { e ->
-//                            // Handle failure to fetch comments
-//                            recipes.add(recipe)
-//                            Log.e(
-//                                "getAllRecipes",
-//                                "Failed to fetch comments for recipe $recipe.recipeId",
-//                                e
-//                            )
-//                        }
-//                }
-//                Log.d("getAllRecipes", recipes.toString())
-//
-//                Log.d("getAllRecipes", "Fetched ${recipes.size} recipes")
-//                listener(recipes)
-//            }
-//    }
-
     fun getAllRecipes(
         since: Long,
         coroutineScope: CoroutineScope,
@@ -84,11 +45,21 @@ object FirestoreModel {
                         .await()
 
                     // Map comments to the respective recipe
-                    val comments = commentsResult.documents.map { it.toObject(Comment::class.java)!! }
+                    val comments =
+                        commentsResult.documents.map { it.toObject(Comment::class.java)!! }
                     recipe.comments = comments
+
+                    // Query the users collection using ownerId
+                    val ownerResult = db.collection("users").document(recipe.ownerId).get().await()
+                    ownerResult?.let { documentSnapshot ->
+                        val user = documentSnapshot.toObject(User::class.java)
+                        if (user != null) {
+                            recipe.owner = user
+                        }
+                    }
+
                     recipes.add(recipe)
                 }
-                Log.d("getAllRecipes", "Fetched ${recipes.size} recipes")
                 listener(recipes)
             } catch (e: Exception) {
                 Log.e("getAllRecipes", "Error fetching recipes", e)

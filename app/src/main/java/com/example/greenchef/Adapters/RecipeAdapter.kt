@@ -105,7 +105,7 @@ class RecipeAdapter(
         }
 
         holder.editButton.setOnClickListener {
-            val action = ProfileFragmentDirections.actionNavigationProfileToEditFragment(recipe)
+            val action = ProfileFragmentDirections.actionNavigationProfileToAddEditFragment(recipe)
             fragmentContext.findNavController().navigate(action)
         }
     }

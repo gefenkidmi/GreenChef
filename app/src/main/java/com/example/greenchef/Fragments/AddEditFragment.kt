@@ -33,16 +33,13 @@ import com.example.greenchef.ViewModels.UserViewModel
 import com.google.android.material.textfield.TextInputEditText
 import com.squareup.picasso.Picasso
 
-class EditFragment : Fragment() {
-
-    private val args: EditFragmentArgs by navArgs()
+class AddEditFragment : Fragment() {
+    private val args: AddEditFragmentArgs by navArgs()
     private lateinit var recipeNameEditText: EditText
     private lateinit var imageViewRecipe: ImageView
     private lateinit var spinnerCategory: Spinner
     private lateinit var editTextDescription: EditText
-    private lateinit var editTextIngredient: EditText
     private lateinit var editTextProcedure: EditText
-    private lateinit var buttonAddIngredient: Button
     private lateinit var buttonSave: Button
     private lateinit var buttonCancel: Button
     private lateinit var editTextFilter: TextInputEditText
@@ -54,7 +51,7 @@ class EditFragment : Fragment() {
     private var imageUri: Uri? = null
     private val recipeViewModel: RecipeViewModel by viewModels()
     private val userViewModel: UserViewModel = UserViewModel(GlobalVariables.currentUser!!.userId)
-    private lateinit var recipe: Recipe
+    private var recipe: Recipe? = null
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -76,25 +73,24 @@ class EditFragment : Fragment() {
             }
         }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recipe = args.recipe!!
+        recipe = args.recipe
+        if (recipe != null) {
+            recipeNameEditText.setText(recipe!!.name)
+            imageViewRecipe.scaleType = ImageView.ScaleType.CENTER_CROP
+            spinnerCategory.setSelection(localDataRepository.categories.indexOf(recipe!!.category))
+            editTextDescription.setText(recipe!!.description)
+            editTextProcedure.setText(recipe!!.procedure)
+            initRecyclerViewIngredients(view)
 
-        recipeNameEditText.setText(recipe.name)
-        imageViewRecipe.scaleType = ImageView.ScaleType.CENTER_CROP
-        spinnerCategory.setSelection(localDataRepository.categories.indexOf(recipe.category))
-        editTextDescription.setText(recipe.description)
-        editTextProcedure.setText(recipe.procedure)
-        initRecyclerViewIngredients(view)
-
-        if (recipe.imageUri != "" && recipe.imageUri != "null") {
-            setImage(Uri.parse(recipe.imageUri))
-            imageUri = Uri.parse(recipe.imageUri)
+            if (recipe!!.imageUri != "" && recipe!!.imageUri != "null") {
+                setImage(Uri.parse(recipe!!.imageUri))
+                imageUri = Uri.parse(recipe!!.imageUri)
+            }
+        } else {
+            initRecyclerViewIngredients(view)
         }
     }
 
@@ -102,7 +98,7 @@ class EditFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_edit, container, false)
+        val view = inflater.inflate(R.layout.fragment_add_edit, container, false)
 
         recipeViewModel.setContextAndDB(requireContext())
         navController = findNavController()
@@ -120,6 +116,7 @@ class EditFragment : Fragment() {
         initSpinnerCategory()
         initImageView()
         initButtons()
+        initRecyclerViewIngredients(view)
 
         return view
     }
@@ -169,7 +166,8 @@ class EditFragment : Fragment() {
 
         // Initialize RecyclerView and Adapter
         recyclerViewIngredients.layoutManager = LinearLayoutManager(requireContext())
-        ingredientAdapter = IngredientAdapter(localDataRepository.ingredients, recipe.ingredients)
+        ingredientAdapter =
+            IngredientAdapter(localDataRepository.ingredients, recipe?.ingredients ?: emptyList())
         recyclerViewIngredients.adapter = ingredientAdapter
 
         // Set up text change listener for filtering
@@ -201,29 +199,43 @@ class EditFragment : Fragment() {
 
         // Update a Recipe object
         val recipe = Recipe(
-            recipeId = recipe.recipeId,
+            recipeId = recipe?.recipeId ?: "",
             name = recipeName,
             category = category,
             description = description,
             imageUri = imageUri.toString(),
             ingredients = checkedIngredients,
             procedure = procedure,
-            rating = recipe.rating,
-            numberOfRatings = recipe.numberOfRatings,
+            rating = recipe?.rating ?: 0.0f,
+            numberOfRatings = recipe?.numberOfRatings ?: 0,
             ownerId = GlobalVariables.currentUser!!.userId,
             lastUpdated = System.currentTimeMillis()
         )
 
-        // Call the createRecipe method in RecipeViewModel
-        recipeViewModel.updateRecipe(recipe) { recipeWithId ->
-            // After a successful creation, update the user's recipeIds
-            userViewModel.updateUserRecipeIds(listOf(recipeWithId.recipeId), onSuccess = {
-                // After a successful update, navigate back to the previous fragment
-                progressBar.visibility = View.GONE
-                navController.navigateUp()
-            }, onFailure = {
-                // Handle failure
-            })
+        if (recipe.recipeId != "") {
+            // Call the updateRecipe method in RecipeViewModel
+            recipeViewModel.updateRecipe(recipe) { recipeWithId ->
+                // After a successful creation, update the user's recipeIds
+                userViewModel.updateUserRecipeIds(listOf(recipeWithId.recipeId), onSuccess = {
+                    // After a successful update, navigate back to the previous fragment
+                    progressBar.visibility = View.GONE
+                    navController.navigateUp()
+                }, onFailure = {
+                    // Handle failure
+                })
+            }
+        } else {
+            // Call the createRecipe method in RecipeViewModel
+            recipeViewModel.createRecipe(recipe) { recipeWithId ->
+                // After a successful creation, update the user's recipeIds
+                userViewModel.updateUserRecipeIds(listOf(recipeWithId.recipeId), onSuccess = {
+                    // After a successful update, navigate back to the previous fragment
+                    progressBar.visibility = View.GONE
+                    navController.navigateUp()
+                }, onFailure = {
+                    // Handle failure
+                })
+            }
         }
     }
 

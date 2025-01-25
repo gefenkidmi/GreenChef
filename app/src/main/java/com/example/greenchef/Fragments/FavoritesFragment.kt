@@ -22,8 +22,6 @@ import com.example.greenchef.ViewModels.UserViewModel
  * create an instance of this fragment.
  */
 class FavoritesFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-
     private lateinit var recipeRecyclerView: RecyclerView
 
     private val recipeViewModel: RecipeViewModel by viewModels()

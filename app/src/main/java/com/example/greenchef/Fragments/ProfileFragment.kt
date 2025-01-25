@@ -27,17 +27,9 @@ import com.example.greenchef.ViewModels.RecipeViewModel
 import com.example.greenchef.ViewModels.UserViewModel
 import com.squareup.picasso.Picasso
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-private const val READ_EXTERNAL_STORAGE_PERMISSION_CODE = 1
-private const val PICK_IMAGE_REQUEST_CODE = 2
-
 class ProfileFragment : Fragment(),
     EditDisplayNameDialogFragment.EditUsernameDialogListener {
 
-    private var param1: String? = null
-    private var param2: String? = null
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recipeRecyclerView: RecyclerView
 
     private val recipeViewModel: RecipeViewModel by viewModels()
@@ -63,14 +55,6 @@ class ProfileFragment : Fragment(),
                 }
             }
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -159,7 +143,7 @@ class ProfileFragment : Fragment(),
                 })
         } ?: run {
             // Load default placeholder image if user photo is not available
-            userPhotoImageView?.setImageResource(R.drawable.baseline_add_photo_alternate_24)
+            userPhotoImageView?.setImageResource(R.drawable.baseline_person_24)
         }
     }
 
