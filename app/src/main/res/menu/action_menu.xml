@@ -6,4 +6,9 @@
         android:title="Sign Out"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_update_location"
+        android:title="Update location"
+        app:showAsAction="never" />
+
 </menu>

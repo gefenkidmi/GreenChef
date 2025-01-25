@@ -19,6 +19,12 @@
         tools:layout="@layout/fragment_add" />
 
     <fragment
+        android:id="@+id/navigation_map"
+        android:name="com.example.greenchef.Fragments.MapFragment"
+        android:label="Map"
+        tools:layout="@layout/fragment_map" />
+
+    <fragment
         android:id="@+id/navigation_favorites"
         android:name="com.example.greenchef.Fragments.FavoritesFragment"
         android:label="Favorites"

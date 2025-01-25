@@ -7,6 +7,9 @@
     <item android:title="Add"
         android:id="@+id/navigation_add"
         android:icon="@drawable/baseline_restaurant_24"/>
+    <item android:title="Map"
+        android:id="@+id/navigation_map"
+        android:icon="@drawable/earth_svgrepo_com"/>
     <item android:title="Favorites"
         android:id="@+id/navigation_favorites"
         android:icon="@drawable/baseline_favorite_24"/>

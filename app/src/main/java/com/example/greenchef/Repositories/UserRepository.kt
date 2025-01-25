@@ -6,6 +6,7 @@ import com.example.greenchef.DataClass.User
 import com.example.greenchef.Models.FirestoreModel
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -24,7 +25,8 @@ class UserRepository {
             "photoUrl" to "",
             "recipeIds" to emptyList<String>(),
             "favoriteRecipeIds" to emptyList<String>(),
-            "ratedRecipes" to emptyMap<String, Int>()
+            "ratedRecipes" to emptyMap<String, Int>(),
+            "GeoPoint" to null
         )
 
         db.collection("users")
@@ -37,6 +39,23 @@ class UserRepository {
             .addOnFailureListener { exception ->
                 // Handle failure
                 Log.d("initializeUser", "failed: ${exception.message}")
+            }
+    }
+
+    fun getAllUsers(onSuccess: (List<User>) -> Unit, onFailure: () -> Unit) {
+        db.collection("users")
+            .get()
+            .addOnSuccessListener { result ->
+                val users = mutableListOf<User>()
+                for (document in result) {
+                    users.add(document.toObject(User::class.java))
+                }
+                onSuccess(users)
+            }
+            .addOnFailureListener { exception ->
+                // Handle failure
+                Log.d("getAllUsers", "failed: ${exception.message}")
+                onFailure()
             }
     }
 
@@ -260,6 +279,20 @@ class UserRepository {
             .addOnFailureListener { exception ->
                 // Handle failure
                 Log.d("addUserRatedRecipe", "failed: ${exception.message}")
+                onFailure()
+            }
+    }
+
+    fun updateGeoPoint(userId: String, geoPoint: GeoPoint, onSuccess: () -> Unit, onFailure: () -> Unit) {
+        db.collection("users")
+            .document(userId)
+            .update("GeoPoint", geoPoint)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                // Handle failure
+                Log.d("updateGeoPoint", "failed: ${exception.message}")
                 onFailure()
             }
     }
