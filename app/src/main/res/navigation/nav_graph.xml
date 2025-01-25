@@ -10,9 +10,6 @@
         android:name="com.example.greenchef.Fragments.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_navigation_home_to_viewFragment"
-            app:destination="@id/viewFragment" />
     </fragment>
 
     <fragment
@@ -43,18 +40,28 @@
         android:label="Profile"
         tools:layout="@layout/fragment_profile" >
         <action
-            android:id="@+id/action_navigation_profile_to_editFragment"
-            app:destination="@id/editFragment" />
+            android:id="@+id/actionNavigationProfileToEditFragment"
+            app:destination="@id/editFragment"/>
     </fragment>
     <fragment
         android:id="@+id/editFragment"
         android:name="com.example.greenchef.Fragments.EditFragment"
         android:label="Edit Recipe"
-        tools:layout="@layout/fragment_edit" />
+        tools:layout="@layout/fragment_edit" >
+        <argument
+            android:name="recipe"
+            app:argType="com.cc.recipe4u.DataClass.Recipe"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
     <fragment
         android:id="@+id/viewFragment"
         android:name="com.example.greenchef.Fragments.ViewFragment"
         android:label="View Recipe"
-        tools:layout="@layout/fragment_view" />
+        tools:layout="@layout/fragment_view" >
+        <action
+            android:id="@+id/actionNavigationViewToEditFragment"
+            app:destination="@id/editFragment"/>
+    </fragment>
 
 </navigation>
