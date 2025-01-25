@@ -9,17 +9,14 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
-import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.greenchef.DataClass.Recipe
 import com.example.greenchef.Objects.GlobalVariables
 import com.example.greenchef.R
-import com.example.greenchef.ViewModels.AuthViewModel
 import com.example.greenchef.ViewModels.RecipeViewModel
 import com.example.greenchef.ViewModels.UserViewModel
 import com.squareup.picasso.Picasso
-import kotlin.properties.Delegates
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val RECIPE_PARAM = "recipe"

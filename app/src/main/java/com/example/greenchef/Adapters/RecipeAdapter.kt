@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.CheckBox
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -29,13 +30,12 @@ class RecipeAdapter(private var recipes: List<Recipe>,
     private var filteredRecipes: List<Recipe> = recipes
 
     class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val editButton: Button = itemView.findViewById(R.id.buttonViewEdit)
+        val editButton: ImageButton = itemView.findViewById(R.id.buttonViewEdit)
         val imageViewRecipe: ImageView = itemView.findViewById(R.id.imageViewRecipe)
         val textViewRecipeName: TextView = itemView.findViewById(R.id.textViewRecipeName)
         val textViewDescription: TextView = itemView.findViewById(R.id.textViewDescription)
         val favoriteCheckBox: CheckBox = itemView.findViewById(R.id.favoriteCheckBox)
         val ratingBar: RatingBar = itemView.findViewById(R.id.ratingBar)
-        //val buttonView: Button = itemView.findViewById(R.id.buttonView)
     }
 
     init {
@@ -57,6 +57,7 @@ class RecipeAdapter(private var recipes: List<Recipe>,
         holder.textViewDescription.text = recipe.description
         holder.favoriteCheckBox.isChecked = GlobalVariables.currentUser!!.favoriteRecipeIds.contains(recipe.recipeId)
         holder.ratingBar.rating = recipe.rating
+        setCheckboxIcon(holder.favoriteCheckBox.isChecked, recipe.recipeId, holder)
 
         if (fragmentContext is ProfileFragment) {
             holder.editButton.visibility = View.VISIBLE
@@ -75,6 +76,7 @@ class RecipeAdapter(private var recipes: List<Recipe>,
             fragmentContext.findNavController().navigate(R.id.viewFragment, bundle)
         }
         holder.favoriteCheckBox.setOnClickListener {
+            setCheckboxIcon(holder.favoriteCheckBox.isChecked, recipe.recipeId, holder)
             if (holder.favoriteCheckBox.isChecked) {
                 userViewModel.updateUserFavoriteRecipeId(recipe.recipeId)
             } else {
@@ -99,4 +101,12 @@ class RecipeAdapter(private var recipes: List<Recipe>,
         }
     }
     override fun getItemCount(): Int = recipes.size
+
+    private fun setCheckboxIcon(isChecked:Boolean, recipeId: String, holder: RecipeViewHolder){
+        if (isChecked) {
+            holder.favoriteCheckBox.buttonDrawable=ResourcesCompat.getDrawable(fragmentContext.resources, R.drawable.baseline_favorite_24_red, null)
+        } else {
+            holder.favoriteCheckBox.buttonDrawable= ResourcesCompat.getDrawable(fragmentContext.resources, R.drawable.baseline_favorite_border_24, null)
+        }
+    }
 }
