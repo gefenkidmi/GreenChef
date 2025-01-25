@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.androidx.navigation.safe.args)
+    alias(libs.plugins.google.services)
 
 }
 
@@ -35,11 +36,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
@@ -69,6 +70,8 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.retrofit2)
     implementation(libs.converter.gson)
+    implementation(libs.osmdroid.android)
+    implementation(libs.play.services.location)
     kapt(libs.room.complier)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

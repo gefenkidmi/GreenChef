@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.example.greenchef.DataClass.User
 import com.example.greenchef.Objects.GlobalVariables
 import com.example.greenchef.Repositories.UserRepository
+import com.google.firebase.firestore.GeoPoint
 import java.util.*
 
 class UserViewModel(private val userId: String) : ViewModel() {
@@ -144,6 +145,18 @@ class UserViewModel(private val userId: String) : ViewModel() {
 
     fun addUserRatedRecipe(recipeId: String, rating: Float) {
         userRepository.addUserRatedRecipe(userId, recipeId, rating,
+            onSuccess = {
+                // After a successful update, fetch the user again to reflect changes
+                fetchUser()
+            },
+            onFailure = {
+                // Handle failure
+            }
+        )
+    }
+
+    fun updateGeoLocation(lat: Double, lon: Double) {
+        userRepository.updateGeoPoint(userId, GeoPoint(lat, lon),
             onSuccess = {
                 // After a successful update, fetch the user again to reflect changes
                 fetchUser()

@@ -49,6 +49,7 @@
             android:textSize="14sp"
             tools:text="user@example.com"
             />
+
     </RelativeLayout>
 
     <!-- My Recipes Section -->
