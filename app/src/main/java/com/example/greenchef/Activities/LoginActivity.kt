@@ -2,7 +2,6 @@ package com.example.greenchef.Activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -28,17 +27,16 @@ class LoginActivity : AppCompatActivity() {
         setViews()
         setButtonListeners()
         observeUserStatus()
-
     }
 
-    private fun setViews(){
+    private fun setViews() {
         usernameEditText = findViewById(R.id.et_username)
         passwordEditText = findViewById(R.id.et_password)
         loginButton = findViewById(R.id.btn_login)
         signUpTextView = findViewById(R.id.tv_signup)
     }
 
-    private fun setButtonListeners(){
+    private fun setButtonListeners() {
         loginButton.setOnClickListener {
             val email = usernameEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
@@ -54,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeUserStatus(){
+    private fun observeUserStatus() {
         authViewModel.isUserSignedIn.observe(this) { isSignedIn ->
             if (isSignedIn) {
                 val userid = authViewModel.currentUser.value!!.uid

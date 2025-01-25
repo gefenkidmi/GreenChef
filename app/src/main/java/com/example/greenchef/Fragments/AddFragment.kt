@@ -30,22 +30,12 @@ import com.example.greenchef.ViewModels.RecipeViewModel
 import com.example.greenchef.ViewModels.UserViewModel
 import com.google.android.material.textfield.TextInputEditText
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-private const val PICK_IMAGE_REQUEST = 1
-
 class AddFragment : Fragment() {
-
-    private var param1: String? = null
-    private var param2: String? = null
-
     private lateinit var recipeNameEditText: EditText
     private lateinit var imageViewRecipe: ImageView
     private lateinit var spinnerCategory: Spinner
     private lateinit var editTextDescription: EditText
-    private lateinit var editTextIngredient: EditText
     private lateinit var editTextProcedure: EditText
-    private lateinit var buttonAddIngredient: Button
     private lateinit var buttonSave: Button
     private lateinit var buttonCancel: Button
     private lateinit var editTextFilter: TextInputEditText
@@ -76,14 +66,6 @@ class AddFragment : Fragment() {
                 }
             }
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

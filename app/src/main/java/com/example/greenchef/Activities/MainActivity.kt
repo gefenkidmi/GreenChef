@@ -1,21 +1,18 @@
 package com.example.greenchef.Activities
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -29,7 +26,8 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
 private const val LOCATION_PERMISSION_REQUEST_CODE = 123
-class MainActivity : AppCompatActivity(){
+
+class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
@@ -59,10 +57,12 @@ class MainActivity : AppCompatActivity(){
                 authViewModel.signOut()
                 true
             }
+
             R.id.action_update_location -> {
                 updateLocation()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -88,13 +88,16 @@ class MainActivity : AppCompatActivity(){
     private fun requestLocationPermission() {
         ActivityCompat.requestPermissions(
             this,
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
             LOCATION_PERMISSION_REQUEST_CODE
         )
     }
 
     private fun getLastKnownLocation() {
-        if(checkLocationPermission()) {
+        if (checkLocationPermission()) {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location ->
                     if (location != null) {
@@ -170,8 +173,7 @@ class MainActivity : AppCompatActivity(){
                 R.id.navigation_add,
                 R.id.navigation_favorites,
                 R.id.navigation_profile,
-                R.id.navigation_map ->
-                {
+                R.id.navigation_map -> {
 
                     if (binding.bottomNavigationView.selectedItemId != item.itemId) {
                         navController.popBackStack(
@@ -179,9 +181,12 @@ class MainActivity : AppCompatActivity(){
                             item.itemId == R.id.navigation_profile
                         )
                         navController.navigate(item.itemId)
+                    } else {
+                        navController.popBackStack()
                     }
                     true
                 }
+
                 else -> false
             }
         }

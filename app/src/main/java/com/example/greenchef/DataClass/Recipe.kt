@@ -19,7 +19,8 @@ data class Recipe(
     var numberOfRatings: Int = 0,
     var ownerId: String = "",
     var lastUpdated: Long = 0,
-    var comments: List<Comment> = emptyList()
+    var comments: List<Comment> = emptyList(),
+    var owner: User = User(),
 ) : Parcelable {
 
     @Ignore

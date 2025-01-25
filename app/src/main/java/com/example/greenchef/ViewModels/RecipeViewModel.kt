@@ -38,11 +38,9 @@ class RecipeViewModel : ViewModel() {
     fun getAllRecipes(coroutineScope: CoroutineScope): LiveData<List<Recipe>> {
         val localLastUpdated = RecipeLocalTime.getLocalLastUpdated(context)
         FirestoreModel.getAllRecipes(localLastUpdated, coroutineScope) { recipes ->
-            Log.d("RecipeViewModel", "Fetched ${recipes.size} recipes")
             var lastUpdated = 0L
             for (recipe in recipes) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    Log.d("RecipeViewModel", recipe.toString())
                     recipeDao.insert(recipe)
                 }
                 if (lastUpdated < recipe.lastUpdated) {
@@ -174,7 +172,6 @@ class RecipeViewModel : ViewModel() {
             val newRecipe = recipe.copy()
             val newComments = newRecipe.comments.toMutableList()
             newComments.add(comment)
-            Log.d("RecipeViewModel", newRecipe.comments.toString())
             newRecipe.comments = newComments
             CoroutineScope(Dispatchers.IO).launch {
                 recipeDao.update(newRecipe)

@@ -40,9 +40,7 @@ class EditFragment : Fragment() {
     private lateinit var imageViewRecipe: ImageView
     private lateinit var spinnerCategory: Spinner
     private lateinit var editTextDescription: EditText
-    private lateinit var editTextIngredient: EditText
     private lateinit var editTextProcedure: EditText
-    private lateinit var buttonAddIngredient: Button
     private lateinit var buttonSave: Button
     private lateinit var buttonCancel: Button
     private lateinit var editTextFilter: TextInputEditText
@@ -75,10 +73,6 @@ class EditFragment : Fragment() {
                 }
             }
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

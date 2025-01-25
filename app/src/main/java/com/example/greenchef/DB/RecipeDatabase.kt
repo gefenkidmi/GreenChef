@@ -8,6 +8,6 @@ object RecipeDatabase {
         return Room.databaseBuilder(
             context,
             LocalDatabase::class.java, "recipe-database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 }
