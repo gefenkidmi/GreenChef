@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.Spinner
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.greenchef.Adapters.RecipeAdapter
@@ -56,7 +57,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun initRecipeRecyclerView() {
-        recipeViewModel.getAllRecipes().observe(viewLifecycleOwner) { recipes ->
+        recipeViewModel.getAllRecipes(lifecycleScope).observe(viewLifecycleOwner) { recipes ->
             if (recipes.isNotEmpty()) {
                 this.recipes = recipes
                 updateAdapter()

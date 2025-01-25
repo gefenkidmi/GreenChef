@@ -1,7 +1,6 @@
 package com.example.greenchef.Adapters
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +24,7 @@ import com.squareup.picasso.Picasso
 class RecipeAdapter(
     private var recipes: List<Recipe>,
     private val fragmentContext: Fragment,
-    private val sortBy: String = "Name"
+    sortBy: String = "Name"
 ) :
     RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 

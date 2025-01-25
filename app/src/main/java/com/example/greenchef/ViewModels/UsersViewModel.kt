@@ -22,4 +22,12 @@ class UsersViewModel : ViewModel() {
             }
         )
     }
+
+    fun getUserById(userId: String, listener: (User) -> Unit) {
+        userRepository.fetchUser(userId, onSuccess = { user ->
+            listener(user)
+        }, onFailure = {
+            // Handle failure
+        })
+    }
 }

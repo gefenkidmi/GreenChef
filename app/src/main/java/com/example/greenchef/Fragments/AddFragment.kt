@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +29,6 @@ import com.example.greenchef.R
 import com.example.greenchef.ViewModels.RecipeViewModel
 import com.example.greenchef.ViewModels.UserViewModel
 import com.google.android.material.textfield.TextInputEditText
-import com.squareup.picasso.Picasso
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -126,12 +124,18 @@ class AddFragment : Fragment() {
         // Apply the adapter to the spinner
         spinnerCategory.adapter = adapter
     }
+
     private fun initImageView() {
         // Set onClickListener for the image view to pick an image from the gallery
         imageViewRecipe.setOnClickListener {
-            GalleryHandler.getPhotoUriFromGallery(requireActivity(), pickImageLauncher, requestPermissionLauncher)
+            GalleryHandler.getPhotoUriFromGallery(
+                requireActivity(),
+                pickImageLauncher,
+                requestPermissionLauncher
+            )
         }
     }
+
     private fun initButtons() {
         // Set onClickListener for the save button
         buttonSave.setOnClickListener {
@@ -145,6 +149,7 @@ class AddFragment : Fragment() {
             navController.navigateUp()
         }
     }
+
     private fun initRecyclerViewIngredients(view: View) {
         editTextFilter = view.findViewById(R.id.editTextFilter)
         recyclerViewIngredients = view.findViewById(R.id.recyclerViewIngredients)
@@ -169,6 +174,7 @@ class AddFragment : Fragment() {
             }
         })
     }
+
     private fun uploadRecipe() {
         // Get the values from the views
         val recipeName = recipeNameEditText.text.toString()

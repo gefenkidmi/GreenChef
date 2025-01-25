@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.greenchef.DataClass.Recipe
 import com.example.greenchef.DataClass.User
 import com.example.greenchef.InfoWindowsForMap.CustomInfoWindow
@@ -84,7 +85,7 @@ class MapFragment : Fragment() {
     private fun observeUsersAndRecipes() {
         recipeViewModel.setContextAndDB(requireContext())
 
-        recipeViewModel.getAllRecipes().observe(viewLifecycleOwner) { recipes ->
+        recipeViewModel.getAllRecipes(lifecycleScope).observe(viewLifecycleOwner) { recipes ->
             this.recipes = recipes
             gotRecipes = true
             setUsersMarkers()

@@ -1,5 +1,6 @@
 package com.example.greenchef.Fragments
 
+import GalleryHandler
 import android.app.Activity
 import android.content.SharedPreferences
 import android.net.Uri
@@ -10,9 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.greenchef.Adapters.RecipeAdapter
@@ -52,8 +54,11 @@ class ProfileFragment : Fragment(),
     private val pickImageLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                // Handle the selected image URI
                 val selectedImageUri: Uri? = result.data?.data
                 if (selectedImageUri != null) {
+                    // Use the selectedImageUri as needed
+                    // For example, update the UI with the selected image
                     userViewModel.updateUserPhoto(selectedImageUri)
                 }
             }
@@ -94,9 +99,14 @@ class ProfileFragment : Fragment(),
             showEditUsernameDialog()
         }
         userPhotoImageView.setOnClickListener {
-            GalleryHandler.getPhotoUriFromGallery(requireActivity(), pickImageLauncher, requestPermissionLauncher)
+            GalleryHandler.getPhotoUriFromGallery(
+                requireActivity(),
+                pickImageLauncher,
+                requestPermissionLauncher
+            )
         }
     }
+
     private fun observeUser(view: View) {
         val emailTextView: TextView? = view.findViewById(R.id.emailTextView)
 
@@ -115,6 +125,7 @@ class ProfileFragment : Fragment(),
             }
         }
     }
+
     private fun showEditUsernameDialog() {
         val dialogFragment = EditDisplayNameDialogFragment()
         dialogFragment.show(childFragmentManager, "EditUsernameDialogFragment")
@@ -131,28 +142,32 @@ class ProfileFragment : Fragment(),
 
         displayNameTextView?.text = userData.name
 
+        // Load user photo using Picasso if available
         userData.photoUrl.takeIf { it.isNotEmpty() }?.let { url ->
             Picasso.get()
                 .load(url)
                 .placeholder(R.drawable.progress_animation)
                 .error(R.drawable.baseline_add_photo_alternate_24) // Error image if loading fails
-                .into(userPhotoImageView, object: com.squareup.picasso.Callback {
+                .into(userPhotoImageView, object : com.squareup.picasso.Callback {
                     override fun onSuccess() {
                         userPhotoImageView?.scaleType = ImageView.ScaleType.CENTER_CROP
                     }
 
                     override fun onError(e: Exception?) {
+                        // Set your visibility to VISIBLE
                     }
                 })
         } ?: run {
+            // Load default placeholder image if user photo is not available
             userPhotoImageView?.setImageResource(R.drawable.baseline_add_photo_alternate_24)
         }
     }
 
     private fun initRecipeRecyclerView() {
-        recipeViewModel.getAllRecipes().observe(viewLifecycleOwner) { recipes ->
+        recipeViewModel.getAllRecipes(lifecycleScope).observe(viewLifecycleOwner) { recipes ->
             if (recipes.isNotEmpty()) {
-                val filteredRecipes = recipes.filter { it.ownerId == GlobalVariables.currentUser?.userId }
+                val filteredRecipes =
+                    recipes.filter { it.ownerId == GlobalVariables.currentUser?.userId }
                 val adapter = RecipeAdapter(filteredRecipes, this)
                 recipeRecyclerView.layoutManager = LinearLayoutManager(requireContext())
                 recipeRecyclerView.adapter = adapter

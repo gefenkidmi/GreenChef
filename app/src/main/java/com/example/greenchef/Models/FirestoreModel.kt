@@ -2,7 +2,9 @@ package com.example.greenchef.Models
 
 import android.net.Uri
 import android.util.Log
+import com.example.greenchef.DataClass.Comment
 import com.example.greenchef.DataClass.Recipe
+import com.example.greenchef.Objects.GlobalVariables
 import com.example.greenchef.Objects.RecipeLocalTime
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
@@ -11,23 +13,90 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
 object FirestoreModel {
-    fun getAllRecipes(since: Long, listener: (List<Recipe>) -> Unit) {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("recipes")
-            .whereGreaterThan(RecipeLocalTime.LAST_UPDATED, since)
-            .get()
-            .addOnSuccessListener { result ->
+//    fun getAllRecipes(since: Long, listener: (List<Recipe>) -> Unit) {
+//        val db = FirebaseFirestore.getInstance()
+//        db.collection("recipes")
+//            .whereGreaterThan(RecipeLocalTime.LAST_UPDATED, since)
+//            .get()
+//            .addOnSuccessListener { result ->
+//                val recipes = mutableListOf<Recipe>()
+//                for (document in result) {
+//                    val recipe = document.toObject(Recipe::class.java)
+//
+//                    // Fetch comments for each recipe
+//                    db.collection("recipes")
+//                        .document(recipe.recipeId)
+//                        .collection("comments")
+//                        .get()
+//                        .addOnSuccessListener { commentsResult ->
+//                            // Map comments to the respective recipe
+//                            val recipeWithComments = recipe.copy()
+//                            val comments =
+//                                commentsResult.documents.map { it.toObject(Comment::class.java)!! }
+//                            recipeWithComments.comments = comments
+//                            recipes.add(recipeWithComments)
+//                        }
+//                        .addOnFailureListener { e ->
+//                            // Handle failure to fetch comments
+//                            recipes.add(recipe)
+//                            Log.e(
+//                                "getAllRecipes",
+//                                "Failed to fetch comments for recipe $recipe.recipeId",
+//                                e
+//                            )
+//                        }
+//                }
+//                Log.d("getAllRecipes", recipes.toString())
+//
+//                Log.d("getAllRecipes", "Fetched ${recipes.size} recipes")
+//                listener(recipes)
+//            }
+//    }
+
+    fun getAllRecipes(
+        since: Long,
+        coroutineScope: CoroutineScope,
+        listener: (List<Recipe>) -> Unit
+    ) {
+        coroutineScope.launch {
+            val db = FirebaseFirestore.getInstance()
+            try {
+                val result = db.collection("recipes")
+                    .whereGreaterThan(RecipeLocalTime.LAST_UPDATED, since)
+                    .get()
+                    .await()
+
                 val recipes = mutableListOf<Recipe>()
                 for (document in result) {
                     val recipe = document.toObject(Recipe::class.java)
+
+                    // Fetch comments for each recipe
+                    val commentsResult = db.collection("recipes")
+                        .document(recipe.recipeId)
+                        .collection("comments")
+                        .get()
+                        .await()
+
+                    // Map comments to the respective recipe
+                    val comments = commentsResult.documents.map { it.toObject(Comment::class.java)!! }
+                    recipe.comments = comments
                     recipes.add(recipe)
                 }
+                Log.d("getAllRecipes", "Fetched ${recipes.size} recipes")
                 listener(recipes)
+            } catch (e: Exception) {
+                Log.e("getAllRecipes", "Error fetching recipes", e)
+                // Handle error
             }
+        }
     }
+
 
     fun checkForDeletedRecipes(recipeIdsList: List<String>, listener: (List<String>) -> Unit) {
         val db = FirebaseFirestore.getInstance()
@@ -89,7 +158,8 @@ object FirestoreModel {
             .set(recipe, SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("updateRecipe", "Update successful for recipeId: ${recipe.recipeId}")
-                listener() }
+                listener()
+            }
             .addOnFailureListener { Log.d("updateRecipe", "failed: ${it.message}") }
     }
 
@@ -116,4 +186,34 @@ object FirestoreModel {
             }
     }
 
+    fun addCommentToRecipe(
+        recipeId: String,
+        commentText: String,
+        listener: (Comment) -> Unit
+    ) {
+        val firestore = FirebaseFirestore.getInstance()
+
+        // Generate a unique ID for the new comment
+        val commentId =
+            firestore.collection("recipes").document(recipeId).collection("comments").document().id
+
+        // Create a Comment object
+        val comment = Comment(
+            commentId,
+            commentText,
+            System.currentTimeMillis(),
+            GlobalVariables.currentUser!!.userId
+        )
+
+        // Add the comment document to the comments subcollection
+        firestore.collection("recipes").document(recipeId).collection("comments")
+            .document(commentId).set(comment).addOnSuccessListener {
+                // Comment added successfully
+                Log.d("Add comment to recipe", "Comment added successfully")
+                listener(comment)
+            }.addOnFailureListener { e ->
+                // Handle any errors
+                Log.e("Add comment to recipe", "Error adding comment", e)
+            }
+    }
 }

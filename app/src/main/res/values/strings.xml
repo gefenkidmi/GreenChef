@@ -1,8 +1,10 @@
 <resources>
-    <string name="app_name">GreenChef</string>
+    <string name="app_name">Green Chef</string>
     <string name="login_image">login image</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="edit">Edit</string>
     <string name="editRecipe">Edit</string>
     <string name="calories">Total Calories: %1$s</string>
+    <string name="post">Post</string>
+    <string name="add_comment">Add Comment</string>
 </resources>
