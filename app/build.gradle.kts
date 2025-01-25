@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.osmdroid.android)
     implementation(libs.play.services.location)
+    implementation(libs.okhttp3)
     kapt(libs.room.complier)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -61,7 +61,6 @@ class RecipeAdapter(
                 recipes = recipes.sortedWith(compareBy({ it.name }, { it.recipeId }))
             }
         }
-        Log.d("recipe Sorter", "init: $recipes")
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
@@ -107,7 +106,7 @@ class RecipeAdapter(
         }
 
         holder.editButton.setOnClickListener {
-            val action = ProfileFragmentDirections.actionNavigationProfileToEditFragment()
+            val action = ProfileFragmentDirections.actionNavigationProfileToEditFragment(recipe)
             fragmentContext.findNavController().navigate(action)
         }
     }

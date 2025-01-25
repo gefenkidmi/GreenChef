@@ -1,9 +1,8 @@
 package com.example.greenchef.Services
 
-import android.app.Service
-import android.content.Intent
-import android.os.IBinder
+import android.util.Log
 import com.example.greenchef.DataClass.Nutrition
+import com.example.greenchef.DataClass.NutritonResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.Retrofit
@@ -16,32 +15,29 @@ private const val apiKey = "qfFW3Tl17BfTmoKngxMyhQ==SNAI6dfzsQo6xuZy"
 
 interface NutritionCalculatorApi{
     @Headers(
-        "Accept: application/json",
-        "Content-Type: application/json",
-        "X-Api-Key:" + apiKey,
-        "Platform: android"
+        "X-Api-Key:$apiKey"
     )
     @GET("nutrition")
-    fun fetchData(@Query("query") query:String): Response<List<Nutrition>>
+    suspend fun fetchData(@Query("query") query:String):Response<NutritonResponse>
 }
 
-class NutritionCalculatorService : Service() {
+class NutritionCalculatorService {
     private val retrofit = Retrofit.Builder()
         .baseUrl(endpoint)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    override fun onBind(intent: Intent): IBinder {
-        TODO("Return the communication channel to the service.")
-    }
-
-    fun getNutritionalValues(ingredients: List<String>):Double{
-        val query = ingredients.joinToString(", ")
+    suspend fun getNutritionalValues(ingredients: List<String>):Double{
+        val query:String = ingredients.joinToString(", ")
         val apiService = retrofit.create(NutritionCalculatorApi::class.java)
         val response = apiService.fetchData(query)
         if (response.isSuccessful) {
-            val data = response.body()
-            return data.sumOf { it.calories}
+            val data = response.body()?.items // Extract the list of Nutrition objects from the response body
+            if (data != null) {
+                return data.sumOf { it.calories }
+            } else {
+                return 0.0
+            }
         } else {
             return 0.0
         }

@@ -14,3 +14,7 @@ data class Nutrition (
     var fiber_g: Double,
     var sugar_g: Double
 )
+
+data class NutritonResponse(
+    val items: List<Nutrition>
+)
