@@ -1,7 +1,6 @@
 package com.example.greenchef.Fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,20 +8,19 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
-import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.greenchef.Dao.RecipeDao
 import com.example.greenchef.DataClass.Recipe
 import com.example.greenchef.Objects.GlobalVariables
 import com.example.greenchef.R
 import com.example.greenchef.Services.NutritionCalculatorService
-import com.example.greenchef.ViewModels.AuthViewModel
 import com.example.greenchef.ViewModels.RecipeViewModel
 import com.example.greenchef.ViewModels.UserViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
-import kotlin.properties.Delegates
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val RECIPE_PARAM = "recipe"
@@ -42,15 +40,13 @@ class ViewFragment : Fragment() {
     private lateinit var recipeRatingBar: RatingBar
     private lateinit var recipe: Recipe
     private lateinit var recipeCaloriesTextView: TextView
+    private lateinit var recipeDao: RecipeDao
 
     private val recipeViewModel: RecipeViewModel by viewModels()
     private val userViewModel: UserViewModel = UserViewModel(GlobalVariables.currentUser!!.userId)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            recipe = it.getParcelable(RECIPE_PARAM)!!
-        }
     }
 
     override fun onCreateView(
@@ -59,20 +55,28 @@ class ViewFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_view, container, false)
+        recipeViewModel.setContextAndDB(requireContext())
+        arguments?.let {
+            val recipeParam = it.getParcelable<Recipe>(RECIPE_PARAM)
+            if (recipeParam != null) {
+                recipeViewModel.getById(recipeParam.recipeId)
+                    .observe(viewLifecycleOwner) { recipeById ->
+                        recipe = recipeById
+                        setRating()
+                        lifecycleScope.launch {
+                            loadRecipeData()
+                        }
+                    }
+            }
+        }
 
         getViews(view)
-        lifecycleScope.launch {
-            loadRecipeData()
-        }
-        setRating()
-
-        recipeViewModel.setContextAndDB(requireContext())
 
         return view
     }
 
     private suspend fun loadRecipeData() {
-        recipe?.let {
+        recipe.let {
             recipeNameTextView.text = it.name
             recipeDescriptionTextView.text = it.description
             it.ingredients.forEach { ingredient ->
@@ -111,14 +115,16 @@ class ViewFragment : Fragment() {
                     })
                 }
             }
-            if(recipe.ingredients.isNotEmpty()){
+            if (recipe.ingredients.isNotEmpty()) {
                 recipeCaloriesTextView.text = getString(
                     R.string.calories,
-                    NutritionCalculatorService().getNutritionalValues(it.ingredients).toInt().toString()
+                    NutritionCalculatorService().getNutritionalValues(it.ingredients).toInt()
+                        .toString()
                 )
-            } else{
+            } else {
                 recipeCaloriesTextView.text = getString(
-                    R.string.calories,"0")
+                    R.string.calories, "0"
+                )
             }
         }
     }

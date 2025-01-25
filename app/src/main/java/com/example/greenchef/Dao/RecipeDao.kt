@@ -2,6 +2,7 @@ package com.example.greenchef.Dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -18,6 +19,9 @@ interface RecipeDao {
 
     @Query("SELECT * FROM recipes WHERE ownerId = :ownerId")
     fun getByOwner(ownerId: String): LiveData<List<Recipe>>
+
+    @Query("SELECT * FROM recipes  WHERE recipeId = :recipeId")
+    fun getById(recipeId: String): LiveData<Recipe>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(recipe: Recipe)

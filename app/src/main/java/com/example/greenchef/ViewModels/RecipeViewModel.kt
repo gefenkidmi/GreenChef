@@ -71,6 +71,10 @@ class RecipeViewModel : ViewModel() {
         return recipeDao.getByOwner(ownerId)
     }
 
+    fun getById(recipeId: String): LiveData<Recipe> {
+        return recipeDao.getById(recipeId)
+    }
+
     fun createRecipe(recipe: Recipe, listener: (Recipe) -> Unit) {
         val newRecipe = recipe.copy()
         if (newRecipe.imageUri == "null") {
