@@ -1,6 +1,7 @@
 package com.example.greenchef.Adapters
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,8 +22,10 @@ import com.example.greenchef.R
 import com.example.greenchef.ViewModels.UserViewModel
 import com.squareup.picasso.Picasso
 
-class RecipeAdapter(private var recipes: List<Recipe>,
-                    private val fragmentContext: Fragment
+class RecipeAdapter(
+    private var recipes: List<Recipe>,
+    private val fragmentContext: Fragment,
+    private val sortBy: String = "Name"
 ) :
     RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
@@ -39,8 +42,26 @@ class RecipeAdapter(private var recipes: List<Recipe>,
     }
 
     init {
-        // Sort the recipes list alphabetically by name
-        recipes = recipes.sortedWith(compareBy({ it.name }, { it.recipeId }))
+
+        // Sort the recipe list according to the user's choice
+        when (sortBy) {
+            "Name" -> {
+                recipes = recipes.sortedWith(compareBy({ it.name }, { it.recipeId }))
+            }
+
+            "Rating" -> {
+                recipes = recipes.sortedWith(compareBy({ -it.rating }, { it.recipeId }))
+            }
+
+            "Date" -> {
+                recipes = recipes.sortedWith(compareBy({ -it.lastUpdated }, { it.recipeId }))
+            }
+
+            else -> {
+                recipes = recipes.sortedWith(compareBy({ it.name }, { it.recipeId }))
+            }
+        }
+        Log.d("recipe Sorter", "init: $recipes")
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
@@ -55,7 +76,8 @@ class RecipeAdapter(private var recipes: List<Recipe>,
         // Bind data to views
         holder.textViewRecipeName.text = recipe.name
         holder.textViewDescription.text = recipe.description
-        holder.favoriteCheckBox.isChecked = GlobalVariables.currentUser!!.favoriteRecipeIds.contains(recipe.recipeId)
+        holder.favoriteCheckBox.isChecked =
+            GlobalVariables.currentUser!!.favoriteRecipeIds.contains(recipe.recipeId)
         holder.ratingBar.rating = recipe.rating
         setCheckboxIcon(holder.favoriteCheckBox.isChecked, recipe.recipeId, holder)
 
@@ -85,12 +107,12 @@ class RecipeAdapter(private var recipes: List<Recipe>,
         }
 
         holder.editButton.setOnClickListener {
-            val action=ProfileFragmentDirections.actionNavigationProfileToEditFragment(recipe)
+            val action = ProfileFragmentDirections.actionNavigationProfileToEditFragment(recipe)
             fragmentContext.findNavController().navigate(action)
         }
     }
 
-    private fun loadImageToView(holder: RecipeViewHolder, recipe: Recipe){
+    private fun loadImageToView(holder: RecipeViewHolder, recipe: Recipe) {
         if (recipe.imageUri != "null") {
             Picasso.get()
                 .load(recipe.imageUri)
@@ -100,13 +122,22 @@ class RecipeAdapter(private var recipes: List<Recipe>,
             holder.imageViewRecipe.setImageResource(R.drawable.main_logo)
         }
     }
+
     override fun getItemCount(): Int = recipes.size
 
-    private fun setCheckboxIcon(isChecked:Boolean, recipeId: String, holder: RecipeViewHolder){
+    private fun setCheckboxIcon(isChecked: Boolean, recipeId: String, holder: RecipeViewHolder) {
         if (isChecked) {
-            holder.favoriteCheckBox.buttonDrawable=ResourcesCompat.getDrawable(fragmentContext.resources, R.drawable.baseline_favorite_24_red, null)
+            holder.favoriteCheckBox.buttonDrawable = ResourcesCompat.getDrawable(
+                fragmentContext.resources,
+                R.drawable.baseline_favorite_24_red,
+                null
+            )
         } else {
-            holder.favoriteCheckBox.buttonDrawable= ResourcesCompat.getDrawable(fragmentContext.resources, R.drawable.baseline_favorite_border_24, null)
+            holder.favoriteCheckBox.buttonDrawable = ResourcesCompat.getDrawable(
+                fragmentContext.resources,
+                R.drawable.baseline_favorite_border_24,
+                null
+            )
         }
     }
 }
