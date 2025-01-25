@@ -9,6 +9,7 @@
     android:gravity="center_vertical"
     android:paddingTop="12dp">
 
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageViewRecipe"
         android:layout_width="80dp"
@@ -42,6 +43,9 @@
             android:maxLines="1"
             android:ellipsize="end" />
 
+
+
+
         <RatingBar
             android:id="@+id/ratingBar"
             android:layout_width="wrap_content"
@@ -58,26 +62,25 @@
     </LinearLayout>
 
     <!--    <Button-->
-    <!--        android:id="@+id/buttonViewEdit"-->
-    <!--        android:layout_width="61dp"-->
-    <!--        android:layout_height="36dp"-->
-    <!--        android:text="@string/edit" />-->
-    <ImageButton
+    <!--        android:id="@+id/buttonView"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="View"-->
+    <!--        android:textSize="14sp"-->
+    <!--        android:textColor="@android:color/black"-->
+    <!--        android:backgroundTint="@color/recipeCardButton" />-->
+
+    <Button
         android:id="@+id/buttonViewEdit"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/baseline_edit_24"
-        android:visibility="gone"
-        tools:visibility="visible"
-        android:contentDescription="@string/editRecipe"
-        />
+        android:layout_width="61dp"
+        android:layout_height="36dp"
+        android:text="@string/edit" />
 
     <CheckBox
         android:id="@+id/favoriteCheckBox"
-        android:layout_width="32dp"
-        android:layout_height="48dp"
-        android:button="@drawable/baseline_favorite_border_24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:button="@drawable/favorite_button"
         android:theme="@style/favoriteCheckBoxStyle" />
 
 </LinearLayout>
