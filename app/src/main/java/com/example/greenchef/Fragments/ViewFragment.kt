@@ -9,15 +9,20 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.greenchef.DataClass.Recipe
 import com.example.greenchef.Objects.GlobalVariables
 import com.example.greenchef.R
 import com.example.greenchef.Services.NutritionCalculatorService
+import com.example.greenchef.ViewModels.AuthViewModel
 import com.example.greenchef.ViewModels.RecipeViewModel
 import com.example.greenchef.ViewModels.UserViewModel
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.launch
+import kotlin.properties.Delegates
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val RECIPE_PARAM = "recipe"
@@ -56,7 +61,9 @@ class ViewFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_view, container, false)
 
         getViews(view)
-        loadRecipeData()
+        lifecycleScope.launch {
+            loadRecipeData()
+        }
         setRating()
 
         recipeViewModel.setContextAndDB(requireContext())
@@ -64,7 +71,7 @@ class ViewFragment : Fragment() {
         return view
     }
 
-    private fun loadRecipeData() {
+    private suspend fun loadRecipeData() {
         recipe?.let {
             recipeNameTextView.text = it.name
             recipeDescriptionTextView.text = it.description
@@ -86,7 +93,7 @@ class ViewFragment : Fragment() {
                         }
                     })
             } else {
-                recipeImageView.setImageResource(R.drawable.login_image)
+                recipeImageView.setImageResource(R.drawable.main_logo)
                 recipeImageView.scaleType = ImageView.ScaleType.FIT_XY
             }
             if (GlobalVariables.currentUser?.recipeIds?.contains(it.recipeId) == true) {
@@ -104,10 +111,15 @@ class ViewFragment : Fragment() {
                     })
                 }
             }
-            recipeCaloriesTextView.text = getString(
-                R.string.calories,
-                NutritionCalculatorService().getNutritionalValues(it.ingredients).toInt().toString()
-            )
+            if(recipe.ingredients.isNotEmpty()){
+                recipeCaloriesTextView.text = getString(
+                    R.string.calories,
+                    NutritionCalculatorService().getNutritionalValues(it.ingredients).toInt().toString()
+                )
+            } else{
+                recipeCaloriesTextView.text = getString(
+                    R.string.calories,"0")
+            }
         }
     }
 
