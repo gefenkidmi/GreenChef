@@ -1,11 +1,11 @@
 package com.example.greenchef.Fragments
 
+import GalleryHandler
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +13,10 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Spinner
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -29,10 +31,11 @@ import com.example.greenchef.R
 import com.example.greenchef.ViewModels.RecipeViewModel
 import com.example.greenchef.ViewModels.UserViewModel
 import com.google.android.material.textfield.TextInputEditText
+import com.squareup.picasso.Picasso
 
 class EditFragment : Fragment() {
 
-    val args: EditFragmentArgs by navArgs()
+    private val args: EditFragmentArgs by navArgs()
     private lateinit var recipeNameEditText: EditText
     private lateinit var imageViewRecipe: ImageView
     private lateinit var spinnerCategory: Spinner
@@ -46,11 +49,12 @@ class EditFragment : Fragment() {
     private lateinit var recyclerViewIngredients: RecyclerView
     private lateinit var ingredientAdapter: IngredientAdapter
     private lateinit var navController: NavController
+    private lateinit var progressBar: ProgressBar
 
     private var imageUri: Uri? = null
     private val recipeViewModel: RecipeViewModel by viewModels()
     private val userViewModel: UserViewModel = UserViewModel(GlobalVariables.currentUser!!.userId)
-    private lateinit var recipe:Recipe
+    private lateinit var recipe: Recipe
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -71,9 +75,9 @@ class EditFragment : Fragment() {
                 }
             }
         }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,18 +86,23 @@ class EditFragment : Fragment() {
         recipe = args.recipe!!
 
         recipeNameEditText.setText(recipe.name)
-        imageViewRecipe.setImageURI(Uri.parse(recipe.imageUri))
-        imageUri = Uri.parse(recipe.imageUri)
+        imageViewRecipe.scaleType = ImageView.ScaleType.CENTER_CROP
         spinnerCategory.setSelection(localDataRepository.categories.indexOf(recipe.category))
         editTextDescription.setText(recipe.description)
         editTextProcedure.setText(recipe.procedure)
+        initRecyclerViewIngredients(view)
+
+        if (recipe.imageUri != "" && recipe.imageUri != "null") {
+            setImage(Uri.parse(recipe.imageUri))
+            imageUri = Uri.parse(recipe.imageUri)
+        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_add, container, false)
+        val view = inflater.inflate(R.layout.fragment_edit, container, false)
 
         recipeViewModel.setContextAndDB(requireContext())
         navController = findNavController()
@@ -106,11 +115,11 @@ class EditFragment : Fragment() {
         editTextProcedure = view.findViewById(R.id.editTextProcedure)
         buttonSave = view.findViewById(R.id.buttonSave)
         buttonCancel = view.findViewById(R.id.buttonCancel)
+        progressBar = view.findViewById(R.id.progress_loader)
 
         initSpinnerCategory()
         initImageView()
         initButtons()
-        initRecyclerViewIngredients(view)
 
         return view
     }
@@ -128,12 +137,18 @@ class EditFragment : Fragment() {
         // Apply the adapter to the spinner
         spinnerCategory.adapter = adapter
     }
+
     private fun initImageView() {
         // Set onClickListener for the image view to pick an image from the gallery
         imageViewRecipe.setOnClickListener {
-            GalleryHandler.getPhotoUriFromGallery(requireActivity(), pickImageLauncher, requestPermissionLauncher)
+            GalleryHandler.getPhotoUriFromGallery(
+                requireActivity(),
+                pickImageLauncher,
+                requestPermissionLauncher
+            )
         }
     }
+
     private fun initButtons() {
         // Set onClickListener for the save button
         buttonSave.setOnClickListener {
@@ -147,13 +162,14 @@ class EditFragment : Fragment() {
             navController.navigateUp()
         }
     }
+
     private fun initRecyclerViewIngredients(view: View) {
         editTextFilter = view.findViewById(R.id.editTextFilter)
         recyclerViewIngredients = view.findViewById(R.id.recyclerViewIngredients)
 
         // Initialize RecyclerView and Adapter
         recyclerViewIngredients.layoutManager = LinearLayoutManager(requireContext())
-        ingredientAdapter = IngredientAdapter(localDataRepository.ingredients)
+        ingredientAdapter = IngredientAdapter(localDataRepository.ingredients, recipe.ingredients)
         recyclerViewIngredients.adapter = ingredientAdapter
 
         // Set up text change listener for filtering
@@ -171,7 +187,9 @@ class EditFragment : Fragment() {
             }
         })
     }
+
     private fun uploadRecipe() {
+        progressBar.visibility = View.VISIBLE
         // Get the values from the views
         val recipeName = recipeNameEditText.text.toString()
         val category = spinnerCategory.selectedItem.toString()
@@ -181,7 +199,7 @@ class EditFragment : Fragment() {
         // Get the checked ingredients from the RecyclerView
         val checkedIngredients = ingredientAdapter.getCheckedItems().toList()
 
-        // Create a Recipe object
+        // Update a Recipe object
         val recipe = Recipe(
             recipeId = recipe.recipeId,
             name = recipeName,
@@ -201,6 +219,7 @@ class EditFragment : Fragment() {
             // After a successful creation, update the user's recipeIds
             userViewModel.updateUserRecipeIds(listOf(recipeWithId.recipeId), onSuccess = {
                 // After a successful update, navigate back to the previous fragment
+                progressBar.visibility = View.GONE
                 navController.navigateUp()
             }, onFailure = {
                 // Handle failure
@@ -210,5 +229,20 @@ class EditFragment : Fragment() {
 
     private fun filterIngredients(query: String) {
         ingredientAdapter.filter.filter(query)
+    }
+
+    private fun setImage(uri: Uri) {
+        Picasso.get()
+            .load(uri)
+            .placeholder(R.drawable.progress_animation)
+            .into(imageViewRecipe, object : com.squareup.picasso.Callback {
+                override fun onSuccess() {
+                    imageViewRecipe.scaleType = ImageView.ScaleType.FIT_XY
+                }
+
+                override fun onError(e: Exception?) {
+                    // Set your visibility to VISIBLE
+                }
+            })
     }
 }

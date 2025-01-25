@@ -5,7 +5,6 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import kotlinx.serialization.Serializable
 
 @Entity(tableName = "recipes")
 data class Recipe(
@@ -19,12 +18,14 @@ data class Recipe(
     var rating: Float = 0.0f,
     var numberOfRatings: Int = 0,
     var ownerId: String = "",
-    var lastUpdated: Long = 0
+    var lastUpdated: Long = 0,
+    var comments: List<Comment> = emptyList()
 ) : Parcelable {
 
     @Ignore
     constructor() : this("", "", "", "", "", emptyList(), "", 0.0f, 0, "", 0)
 
+    // Implementing Parcelable
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(recipeId)
         parcel.writeString(name)
@@ -37,6 +38,7 @@ data class Recipe(
         parcel.writeInt(numberOfRatings)
         parcel.writeString(ownerId)
         parcel.writeLong(lastUpdated)
+        parcel.writeStringList(comments.map { it.id })
     }
 
     override fun describeContents(): Int {
@@ -53,6 +55,7 @@ data class Recipe(
         }
     }
 
+    // Secondary constructor for Parcelable
     private constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
@@ -64,6 +67,7 @@ data class Recipe(
         parcel.readFloat(),
         parcel.readInt(),
         parcel.readString() ?: "",
-        parcel.readLong()
+        parcel.readLong(),
+//        parcel.readParcelableList()
     )
 }

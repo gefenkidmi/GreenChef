@@ -71,8 +71,9 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginTop="16dp"
-            android:text="Description:"
-            android:textStyle="bold" />
+            android:text="Description"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/descriptionTextView"
@@ -84,8 +85,9 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginTop="16dp"
-            android:text="Ingredients:"
-            android:textStyle="bold" />
+            android:text="Ingredients"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/ingredientsTextView"
@@ -96,8 +98,9 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginTop="16dp"
-            android:text="Procedure:"
-            android:textStyle="bold" />
+            android:text="Procedure"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/procedureTextView"
@@ -113,7 +116,37 @@
         <TextView
             android:id="@+id/caloriesTextView"
             android:layout_width="101dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="18sp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <EditText
+                android:id="@+id/newCommentText"
+                android:layout_width="292dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="text"
+                android:text="@string/add_comment" />
+
+            <Button
+                android:id="@+id/newCommentButton"
+                android:layout_width="44dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@+id/newCommentText"
+                android:text="@string/post" />
+        </RelativeLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/commentsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp" />
 
     </LinearLayout>
 </ScrollView>
