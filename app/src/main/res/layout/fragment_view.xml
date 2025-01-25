@@ -170,9 +170,9 @@
 
             <EditText
                 android:id="@+id/newCommentText"
-                android:layout_width="292dp"
+                android:layout_width="270dp"
                 android:layout_height="wrap_content"
-                android:ems="10"
+                android:ems="9"
                 android:hint="@string/add_comment"
                 android:inputType="text" />
 

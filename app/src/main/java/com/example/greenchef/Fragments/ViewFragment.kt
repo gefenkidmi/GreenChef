@@ -62,14 +62,17 @@ class ViewFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_view, container, false)
         recipeViewModel.setContextAndDB(requireContext())
+        getViews(view)
+
         arguments?.let {
             val recipeParam = it.getParcelable<Recipe>(RECIPE_PARAM)
             if (recipeParam != null) {
+                recipe = recipeParam
+                setRating()
                 recipeViewModel.getById(recipeParam.recipeId)
                     .observe(viewLifecycleOwner) { recipeById ->
                         recipe = recipeById
                         Log.d("ViewFragment", recipe.toString())
-                        setRating()
 
                         viewLifecycleOwner.lifecycleScope.launch {
                             loadRecipeData()
@@ -81,8 +84,6 @@ class ViewFragment : Fragment() {
                     }
             }
         }
-
-        getViews(view)
 
         return view
     }
@@ -103,6 +104,7 @@ class ViewFragment : Fragment() {
         recipe.let {
             recipeNameTextView.text = it.name
             recipeDescriptionTextView.text = it.description
+            recipeIngredientsTextView.text = ""
             it.ingredients.forEach { ingredient ->
                 recipeIngredientsTextView.append("$ingredient\n")
             }
