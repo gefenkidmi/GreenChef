@@ -132,6 +132,10 @@ class RecipeViewModel : ViewModel() {
 
     fun addRating(recipe: Recipe, rating: Float, onSuccess: (Recipe) -> Unit) {
         val newRecipe = recipe.copy()
+
+        if (newRecipe.numberOfRatings < 0) {
+            newRecipe.numberOfRatings = 0
+        }
         val newRating =
             ((newRecipe.rating * newRecipe.numberOfRatings) + rating) / (newRecipe.numberOfRatings + 1)
         newRecipe.rating = newRating

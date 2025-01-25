@@ -46,11 +46,8 @@ class ProfileFragment : Fragment(),
     private val pickImageLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                // Handle the selected image URI
                 val selectedImageUri: Uri? = result.data?.data
                 if (selectedImageUri != null) {
-                    // Use the selectedImageUri as needed
-                    // For example, update the UI with the selected image
                     userViewModel.updateUserPhoto(selectedImageUri)
                 }
             }

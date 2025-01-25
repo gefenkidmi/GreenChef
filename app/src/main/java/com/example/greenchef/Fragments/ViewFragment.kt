@@ -71,15 +71,17 @@ class ViewFragment : Fragment() {
                 setRating()
                 recipeViewModel.getById(recipeParam.recipeId)
                     .observe(viewLifecycleOwner) { recipeById ->
-                        recipe = recipeById
-                        Log.d("ViewFragment", recipe.toString())
+                        recipeById?.let {
+                            recipe = recipeById
+                            Log.d("ViewFragment", recipe.toString())
 
-                        viewLifecycleOwner.lifecycleScope.launch {
-                            loadRecipeData()
-                        }
-                        view.post {
-                            Log.d("ViewFragment", recipe.comments.toString())
-                            initCommentsRecyclerView(recipe.comments)
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                loadRecipeData()
+                            }
+                            view.post {
+                                Log.d("ViewFragment", recipe.comments.toString())
+                                initCommentsRecyclerView(recipe.comments)
+                            }
                         }
                     }
             }

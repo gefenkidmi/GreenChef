@@ -106,8 +106,7 @@ class HomeFragment : Fragment() {
 
     private fun initSpinner(view: View) {
         val spinner = view.findViewById<Spinner>(R.id.spinner)
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sortOptions)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sortOptions)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
 

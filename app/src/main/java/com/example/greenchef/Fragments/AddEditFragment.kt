@@ -42,7 +42,7 @@ class AddEditFragment : Fragment() {
     private lateinit var editTextProcedure: EditText
     private lateinit var buttonSave: Button
     private lateinit var buttonCancel: Button
-    private lateinit var editTextFilter: TextInputEditText
+    private lateinit var textFilter: TextInputEditText
     private lateinit var recyclerViewIngredients: RecyclerView
     private lateinit var ingredientAdapter: IngredientAdapter
     private lateinit var navController: NavController
@@ -161,7 +161,7 @@ class AddEditFragment : Fragment() {
     }
 
     private fun initRecyclerViewIngredients(view: View) {
-        editTextFilter = view.findViewById(R.id.editTextFilter)
+        textFilter = view.findViewById(R.id.editTextFilter)
         recyclerViewIngredients = view.findViewById(R.id.recyclerViewIngredients)
 
         // Initialize RecyclerView and Adapter
@@ -171,7 +171,7 @@ class AddEditFragment : Fragment() {
         recyclerViewIngredients.adapter = ingredientAdapter
 
         // Set up text change listener for filtering
-        editTextFilter.addTextChangedListener(object : TextWatcher {
+        textFilter.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 // Do nothing
             }

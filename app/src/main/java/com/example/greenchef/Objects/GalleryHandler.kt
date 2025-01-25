@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentActivity
 object GalleryHandler {
     const val REQUEST_CODE_PICK_IMAGE = 123
 
+    // Public function to get photo URI from the gallery
     fun getPhotoUriFromGallery(
         activity: FragmentActivity,
         pickImageLauncher: ActivityResultLauncher<Intent>,
@@ -24,10 +25,7 @@ object GalleryHandler {
     }
 
     private fun checkPermissions(activity: FragmentActivity): Boolean {
-        val readPermission = ContextCompat.checkSelfPermission(
-            activity,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE
-        )
+        val readPermission = ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_EXTERNAL_STORAGE)
         return readPermission == PackageManager.PERMISSION_GRANTED
     }
 

@@ -41,7 +41,7 @@
     <fragment
         android:id="@+id/navigation_add"
         android:name="com.example.greenchef.Fragments.AddEditFragment"
-        android:label="Edit Recipe"
+        android:label="Add"
         tools:layout="@layout/fragment_add_edit">
         <argument
             android:name="recipe"
