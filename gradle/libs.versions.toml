@@ -1,7 +1,7 @@
 [versions]
 agp = "8.7.2"
 kotlin = "1.9.24"
-coreKtx = "1.15.0"
+coreKtx = "1.8.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -59,7 +59,7 @@ retrofit2 = {group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 converter-gson = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGson"}
 osmdroid-android = {group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmdroidAndroid"}
 play-services-location = {group = "com.google.android.gms", name = "play-services-location", version.ref="playServicesLocation"}
-okhttp3 = {group = "com.squareup.okhttp3", name = "okhttp3", version.ref = "okhttp3"}
+okhttp3 = {group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3"}
 circleimageview = {group = "de.hdodenhof", name= "circleimageview", version.ref = "circleImageview"}
 
 [plugins]

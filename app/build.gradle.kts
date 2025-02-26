@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.greenchef"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.greenchef"
