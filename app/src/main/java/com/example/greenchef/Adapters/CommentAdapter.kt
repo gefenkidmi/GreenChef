@@ -25,9 +25,9 @@ class CommentAdapter(private val comments: List<Comment>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
-        val view = LayoutInflater.from(parent.context)
+        val commentView = LayoutInflater.from(parent.context)
             .inflate(com.example.greenchef.R.layout.row_comments, parent, false)
-        return CommentViewHolder(view)
+        return CommentViewHolder(commentView)
     }
 
     override fun getItemCount(): Int {
@@ -54,9 +54,9 @@ class CommentAdapter(private val comments: List<Comment>) :
     }
 
     private fun formatDate(milliseconds: Long): String {
-        val dateFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
+        val format = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = milliseconds
-        return dateFormat.format(calendar.time)
+        return format.format(calendar.time)
     }
 }

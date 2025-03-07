@@ -41,12 +41,12 @@
     <fragment
         android:id="@+id/navigation_add"
         android:name="com.example.greenchef.Fragments.AddEditFragment"
-        android:label="Edit Recipe"
+        android:label="Add"
         tools:layout="@layout/fragment_add_edit">
         <argument
             android:name="recipe"
             android:defaultValue="@null"
-            app:argType="com.cc.recipe4u.DataClass.Recipe"
+            app:argType="com.example.greenchef.DataClass.Recipe"
             app:nullable="true" />
     </fragment>
     <fragment
@@ -54,6 +54,10 @@
         android:name="com.example.greenchef.Fragments.ViewFragment"
         android:label="View Recipe"
         tools:layout="@layout/fragment_view">
+        <argument
+            android:name="recipe"
+            app:argType="com.example.greenchef.DataClass.Recipe"
+            app:nullable="true" />
         <action
             android:id="@+id/actionNavigationViewToEditFragment"
             app:destination="@id/navigation_add" />

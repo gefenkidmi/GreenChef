@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.okhttp3)
     implementation(libs.circleimageview)
+    implementation(libs.firebase.appcheck.playintegrity)
     kapt(libs.room.complier)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
