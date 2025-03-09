@@ -14,10 +14,10 @@ object localDataRepository {
         "Chickpeas",
         "Whole Spelt Flour", "Baking Powder",
         "Egg", "Salt", "Pepper", "Oregano", "Sesame",
-        "Feta Cheese",
+        "Feta Cheese", "Cauliflower", "Basil", "Garlic", "Pine Nuts", "Parmesan Cheese", "Cheese", "Bacon", "Ham", "Butter"
     )
 
     val categories: List<String> = listOf(
-        "Desserts", "Shakes", "Salads & Bowls"
+        "Desserts", "Shakes", "Salads & Bowls", "Low-Carb & Keto"
     )
 }
