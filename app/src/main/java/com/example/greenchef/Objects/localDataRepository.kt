@@ -12,12 +12,12 @@ object localDataRepository {
         "Coconut Oil", "Vanilla Extract", "Olive Oil", "Lemon Juice", "Balsamic Vinegar", "Soy Sauce", "Lime Juice",
         "Almond Butter", "Natural Peanut Butter", "Honey", "Maple Syrup", "Raw Cocoa Powder", "Cinnamon",
         "Chickpeas",
-        "Whole Spelt Flour", "Baking Powder",
-        "Egg", "Salt", "Pepper", "Oregano", "Sesame",
-        "Feta Cheese",
+        "Whole Spelt Flour", "Baking Powder","Almond flour",
+        "Egg", "Salt", "Pepper", "Oregano", "Sesame", "green onions", "peas", "mayonnaise", "celery", "canned tuna",
+        "Feta Cheese", "Cauliflower", "Basil", "Garlic", "Pine Nuts", "Parmesan Cheese", "Cheese", "Butter"
     )
 
     val categories: List<String> = listOf(
-        "Desserts", "Shakes", "Salads & Bowls"
+        "Desserts", "Shakes", "Salads & Bowls", "Low-Carb & Keto"
     )
 }
