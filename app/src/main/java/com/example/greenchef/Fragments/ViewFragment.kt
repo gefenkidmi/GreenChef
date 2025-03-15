@@ -23,7 +23,6 @@ import com.example.greenchef.DataClass.Comment
 import com.example.greenchef.DataClass.Recipe
 import com.example.greenchef.Objects.GlobalVariables
 import com.example.greenchef.R
-import com.example.greenchef.Services.NutritionCalculatorService
 import com.example.greenchef.ViewModels.RecipeViewModel
 import com.example.greenchef.ViewModels.UserViewModel
 import com.squareup.picasso.Picasso
@@ -115,7 +114,6 @@ class ViewFragment : Fragment() {
             setUserInfo()
             setActionButtons()
             setRecipeImage()
-            setCalories()
         }
     }
 
@@ -195,17 +193,17 @@ class ViewFragment : Fragment() {
         }
     }
 
-    private suspend fun setCalories() {
-        if (recipe.ingredients.isNotEmpty() && recipeCaloriesTextView.text.isEmpty()) {
-            progressBar.visibility = View.VISIBLE
-            recipeCaloriesTextView.text =
-                NutritionCalculatorService().getNutritionalValues(recipe.ingredients).toInt()
-                    .toString()
-            progressBar.visibility = View.INVISIBLE
-        } else if (recipe.ingredients.isEmpty()) {
-            recipeCaloriesTextView.text = "0"
-        }
-    }
+//    private suspend fun setCalories() {
+//        if (recipe.ingredients.isNotEmpty() && recipeCaloriesTextView.text.isEmpty()) {
+//            progressBar.visibility = View.VISIBLE
+//            recipeCaloriesTextView.text =
+//                NutritionCalculatorService().getNutritionalValues(recipe.ingredients).toInt()
+//                    .toString()
+//            progressBar.visibility = View.INVISIBLE
+//        } else if (recipe.ingredients.isEmpty()) {
+//            recipeCaloriesTextView.text = "0"
+//        }
+//    }
 
     private fun setRecipeImage() {
         if (recipe.imageUri != "null") {
