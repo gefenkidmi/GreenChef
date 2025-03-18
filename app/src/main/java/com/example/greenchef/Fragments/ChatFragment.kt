@@ -72,7 +72,8 @@ class ChatFragment : Fragment() {
         messageInput.text.clear()
 
         // Correctly call the ViewModel method
-        aiViewModel.generateContent(userMessage, "AIzaSyAd4XMBc8pj1SpmO5o7ssZoRjqWo8fMuUQ")
+        val apiKey = getString(R.string.api_key)
+        aiViewModel.generateContent(userMessage, apiKey)
     }
 }
 
