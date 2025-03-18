@@ -171,7 +171,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.navigation_home,
                 R.id.navigation_add,
-                R.id.navigation_favorites,
+                R.id.chatFragment,
                 R.id.navigation_profile,
                 R.id.navigation_map -> {
 

@@ -6,4 +6,5 @@
     <color name="login_button">#00A651</color>
     <color name="recipeCardButton">#F3F3F3</color>
     <color name="favoriteColor">#F1B537</color>
+    <color name="light_gray">#E0E0E0</color>
 </resources>
