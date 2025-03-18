@@ -1,4 +1,4 @@
-package com.example.greenchef.Fragments
+package com.cc.recipe4u.Fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
