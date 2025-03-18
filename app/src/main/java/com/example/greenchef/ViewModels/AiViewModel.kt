@@ -1,54 +1,53 @@
-package com.example.greenchef
+package com.example.greenchef.ViewModels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.greenchef.Models.OpenAiRequestBody
+import com.example.greenchef.Objects.OpenAiRequestBody
+import com.example.greenchef.Objects.Content
+import com.example.greenchef.Objects.Part
+import com.example.greenchef.Objects.RecipeResponse
 import com.example.greenchef.Models.RetrofitInstance
-import com.example.greenchef.Models.RecipeResponse
-import com.example.greenchef.Services.OpenAiService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Response
 
 class AiViewModel : ViewModel() {
 
-    // Use RetrofitInstance to get an instance of OpenAiService
-    private val openAiService = RetrofitInstance.api
+    private val _responseText = MutableLiveData<String>()
+    val responseText: LiveData<String> get() = _responseText
 
-    // LiveData to hold the recipe suggestion response
-    private val _recipeSuggestion = MutableLiveData<String>()
-    val recipeSuggestion: LiveData<String> get() = _recipeSuggestion
+    private val openAiService = RetrofitInstance.geminiApi
 
-    // LiveData for loading state to show a loading spinner if needed
-    private val _loading = MutableLiveData<Boolean>()
-    val loading: LiveData<Boolean> get() = _loading
-
-    // Function to fetch the recipe suggestion from the API
-    fun fetchRecipeSuggestion(prompt: String) {
-        _loading.value = true  // Set loading to true before making the API call
+    fun generateContent(prompt: String, apiKey: String) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                // Call the OpenAi API using Retrofit instance
+                val requestBody = OpenAiRequestBody(
+                    contents = listOf(Content(parts = listOf(Part(prompt))))
+                )
+
                 val response = withContext(Dispatchers.IO) {
-                    openAiService.getRecipeSuggestions(
-                        OpenAiRequestBody(prompt = prompt)
-                    )
+                    openAiService.generateContent(requestBody, apiKey)
                 }
 
-                // Handle the response
-                if (response.isSuccessful) {
-                    val suggestion = response.body()?.choices?.get(0)?.text ?: "No suggestion found"
-                    _recipeSuggestion.postValue(suggestion)  // Update LiveData with suggestion
+                if (response.isSuccessful && response.body() != null) {
+                    val candidates = response.body()?.candidates
+                    val resultText = candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text?.trim()
+
+                    if (!resultText.isNullOrEmpty()) {
+                        _responseText.value = resultText ?: "No response received"
+                    } else {
+                        _responseText.value = "Empty response"
+                    }
                 } else {
-                    _recipeSuggestion.postValue("Failed to get suggestion")
+                    _responseText.value = "Error: ${response.code()} - ${response.message()}"
+                    Log.e("GeminiAPI", "API Error: ${response.code()} - ${response.message()}")
                 }
             } catch (e: Exception) {
-                _recipeSuggestion.postValue("Error: ${e.message}")
-            } finally {
-                _loading.value = false  // Set loading to false after the API call completes
+                _responseText.value = "Exception: ${e.message}"
+                Log.e("GeminiAPI", "Exception: ${e.message}")
             }
         }
     }

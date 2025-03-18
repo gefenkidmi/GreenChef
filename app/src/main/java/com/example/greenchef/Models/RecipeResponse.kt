@@ -1,9 +1,19 @@
-package com.example.greenchef.Models
+package com.example.greenchef.Objects
+
+import com.google.gson.annotations.SerializedName
 
 data class RecipeResponse(
-    val choices: List<Choice>
+    @SerializedName("candidates") val candidates: List<ResponseCandidate>
 )
 
-data class Choice(
-    val text: String
+data class ResponseCandidate(
+    @SerializedName("content") val content: ResponseContent
+)
+
+data class ResponseContent(
+    @SerializedName("parts") val parts: List<ResponsePart>
+)
+
+data class ResponsePart(
+    @SerializedName("text") val text: String
 )

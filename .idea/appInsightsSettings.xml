@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.greenchef" />
+                  <option name="mobileSdkAppId" value="1:600966619942:android:34a5d51809c966f65317e7" />
+                  <option name="projectId" value="greenchef-c47d7" />
+                  <option name="projectNumber" value="600966619942" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

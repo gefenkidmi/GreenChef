@@ -22,6 +22,7 @@ android {
 
         buildConfigField("String", "OPENAI_API_KEY", "\"${project.findProperty("OPENAI_API_KEY") ?: ""}\"")
 
+
     }
 
     buildTypes {
@@ -79,6 +80,7 @@ dependencies {
     implementation(libs.okhttp3)
     implementation(libs.circleimageview)
     implementation(libs.firebase.appcheck.playintegrity)
+    implementation(libs.logging.interceptor)
     kapt(libs.room.complier)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
