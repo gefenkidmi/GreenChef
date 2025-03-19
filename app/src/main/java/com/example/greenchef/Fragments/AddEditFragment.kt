@@ -188,22 +188,21 @@ class AddEditFragment : Fragment() {
 
     private fun uploadRecipe() {
         progressBar.visibility = View.VISIBLE
-        // Get the values from the views
         val recipeName = recipeNameEditText.text.toString()
         val category = spinnerCategory.selectedItem.toString()
         val description = editTextDescription.text.toString()
         val procedure = editTextProcedure.text.toString()
-
-        // Get the checked ingredients from the RecyclerView
         val checkedIngredients = ingredientAdapter.getCheckedItems().toList()
 
-        // Update a Recipe object
+        // Use a null-safe conversion for the image URI
+        val imageUriString = imageUri?.toString() ?: ""
+
         val recipe = Recipe(
             recipeId = recipe?.recipeId ?: "",
             name = recipeName,
             category = category,
             description = description,
-            imageUri = imageUri.toString(),
+            imageUri = imageUriString,  // Updated here
             ingredients = checkedIngredients,
             procedure = procedure,
             rating = recipe?.rating ?: 0.0f,
