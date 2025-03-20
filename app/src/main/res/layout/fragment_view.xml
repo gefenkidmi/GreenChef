@@ -136,7 +136,6 @@
                 android:id="@+id/caloriesNumberTextView"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/caloriesTextView"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -145,7 +144,6 @@
                 style="?android:attr/progressBarStyle"
                 android:layout_width="200dp"
                 android:layout_height="24dp"
-                android:layout_toEndOf="@id/caloriesTextView"
                 android:visibility="invisible" />
         </RelativeLayout>
 
