@@ -6,7 +6,6 @@
     <string name="editRecipe">Edit</string>
     <string name="post">Post</string>
     <string name="add_comment">Add Comment</string>
-    <string name="total_calories">Total Calories:</string>
     <string name="ask_recipe_hint">Ask for a recipe...</string>
     <string name="send">Send</string>
 </resources>

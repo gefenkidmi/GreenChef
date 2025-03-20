@@ -133,15 +133,6 @@
             android:layout_marginTop="16dp">
 
             <TextView
-                android:id="@+id/caloriesTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:text="@string/total_calories"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
                 android:id="@+id/caloriesNumberTextView"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
